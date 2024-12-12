@@ -1,9 +1,8 @@
+import 'package:fitchecker/components/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-import ' edit_profile.dart';
 
 class MyProfile extends StatefulWidget {
   @override
