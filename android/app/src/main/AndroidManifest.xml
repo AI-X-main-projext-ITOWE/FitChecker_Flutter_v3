@@ -1,0 +1,89 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.fitchecker">
+
+    <!-- 카메라 및 외부 저장소 접근 권한 선언 -->
+    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- url_location -->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+
+    <!-- 카메라 하드웨어 기능 선언 -->
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
+    <application
+        android:label="fitchecker"
+        android:icon="@mipmap/ic_launcher">
+
+        <!-- MainActivity는 앱의 런처 액티비티 -->
+        <activity
+            android:name="com.example.fitchecker.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- Flutter 초기화 시 적용되는 테마 -->
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 카카오톡 로그인을 위한 액티비티 추가 -->
+        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="KAKAO_APP_KEY" android:host="oauth" />
+            </intent-filter>
+        </activity>
+
+        <!-- NativeActivity는 네이티브 화면 전환을 위한 액티비티 -->
+        <activity
+            android:name="com.example.fitchecker.CameraNativeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat"> <!-- Theme.AppCompat 테마 적용 -->
+            <!-- Flutter 초기화 시 적용되는 테마 -->
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+        </activity>
+
+        <!-- Flutter 플러그인 자동 등록을 위한 메타데이터 -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <!-- 텍스트 처리 가능한 액티비티를 쿼리하기 위한 설정 -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
+
+        <!-- 브라우저를 여는 권한 추가 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="http" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+</manifest>

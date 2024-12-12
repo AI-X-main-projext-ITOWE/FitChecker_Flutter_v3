@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "836368647254",
+    "project_id": "fitchecker-a32c6",
+    "storage_bucket": "fitchecker-a32c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836368647254:android:bc50acdaf1e3b07df027f7",
+        "android_client_info": {
+          "package_name": "com.example.fitchecker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836368647254-moeunoinpikm08obf4i29bgc6bou0ag1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fitchecker",
+            "certificate_hash": "21bf586c8d396cb40290330f75a9283b98e934b5"
+          }
+        },
+        {
+          "client_id": "836368647254-7cq160vhbk6n4rq5atrol4bgdu3f2r3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaeNP-lfe7kRLyHw3HADiQC5U_xBqZF6o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836368647254-7cq160vhbk6n4rq5atrol4bgdu3f2r3f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
