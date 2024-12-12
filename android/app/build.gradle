@@ -8,7 +8,6 @@ plugins {
 
 android {
     namespace "com.example.fitchecker"
-    compileSdk = flutter.compileSdkVersion
     compileSdk 35
     ndkVersion = '28.0.12674087 rc2'
 
@@ -79,8 +78,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.7"
     implementation 'com.google.mediapipe:tasks-vision:0.20230731'
-    // AppCompat 라이브러리
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    
     // ConstraintLayout 라이브러리
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
 
@@ -89,9 +87,6 @@ dependencies {
 
     // CardView 라이브러리
     implementation 'androidx.cardview:cardview:1.0.0'
-
-    // Material Design Components
-    implementation 'com.google.android.material:material:1.12.0'
 
     // ViewPager2 라이브러리
     implementation 'androidx.viewpager2:viewpager2:1.1.0'
