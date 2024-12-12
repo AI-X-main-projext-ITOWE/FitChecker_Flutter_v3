@@ -1,3 +1,4 @@
+import 'package:fitchecker/components/exerciseGraph.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,7 +38,7 @@ class MainPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(30.0), // 모서리를 둥글게 설정
           child: Container(
             width: screenWidth * 0.9, // 화면 너비의 90%
-            height: screenWidth * 0.9, // 화면 너비의 40%
+            height: screenWidth * 0.3, // 화면 너비의 40%
             child: Swiper(
               itemBuilder: (BuildContext context, int index) {
                 final imagePaths = [
