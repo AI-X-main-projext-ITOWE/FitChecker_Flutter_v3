@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.2'  // Gradle Wrapper와 호환되는 버전으로 수정
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"  // Kotlin 버전도 함께 수정하는 것이 좋습니다
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.22"  // Kotlin 버전도 함께 수정하는 것이 좋습니다
         classpath 'com.google.gms:google-services:4.4.2'  // Google Services plugin
     }
 }
