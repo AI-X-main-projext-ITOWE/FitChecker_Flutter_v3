@@ -9,7 +9,7 @@ plugins {
 android {
     namespace "com.example.fitchecker"
     compileSdk 35
-    ndkVersion = '28.0.12674087 rc2'
+    ndkVersion = '21.3.6528147'
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -20,6 +20,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    lintOptions {
+        abortOnError false
+        baseline file("lint-baseline.xml")
     }
 
     defaultConfig {

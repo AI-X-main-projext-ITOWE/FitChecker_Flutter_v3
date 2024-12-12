@@ -18,7 +18,7 @@ class _MainScreenState extends State<HomeScreen> {
   static const navigationMethodChannel = MethodChannel('com.example.fitchecker/navigation');
 
   // 헤더, 풋터 Height 비율 0.1 = 디바이스의 10%
-  final double headerAndFooterHeight = 0.08;
+  final double headerAndFooterHeight = 0.1;
 
   // 현재 선택된 화면 인덱스
   int _currentIndex = 0;
