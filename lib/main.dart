@@ -1,11 +1,12 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:fitchecker/scrreens/splash_screen.dart';
+import 'package:fitchecker/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-
+import 'components/notification_helper.dart';
 void main() async {
   // Flutter 애플리케이션 초기화
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,16 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
 
   runApp(const MyApp());
+  // NotificationHelper 초기화
+  final NotificationHelper notificationHelper = NotificationHelper();
+  await notificationHelper.initializeNotifications();
+
+  runApp(
+    Provider<NotificationHelper>(
+      create: (_) => notificationHelper,
+      child: MyApp(),
+    ),
+  );
 }
 
 // 백그라운드에서 메시지를 수신할 때 처리하는 함수

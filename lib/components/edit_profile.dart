@@ -1,9 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
   @override
@@ -25,47 +22,6 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     super.initState();
     _fetchUserData();
-  }
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      String filePath = 'profile_images/$_uid.jpg';
-      File file = File(pickedFile.path);
-
-      setState(() {
-        _isImageUploading = true;
-      });
-
-      try {
-        UploadTask uploadTask = FirebaseStorage.instance.ref(filePath).putFile(file);
-        await uploadTask.whenComplete(() async {
-          String downloadUrl = await FirebaseStorage.instance.ref(filePath).getDownloadURL();
-          setState(() {
-            _profileImageUrl = downloadUrl;
-            _isImageUploading = false;
-          });
-
-          await FirebaseFirestore.instance.collection('users').doc(_uid).update({
-            'photoUrl': downloadUrl,
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('프로필 사진이 업데이트되었습니다.')),
-          );
-        });
-      } catch (e) {
-        setState(() {
-          _isImageUploading = false;
-        });
-        print('Error uploading image: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('프로필 사진 업로드에 실패했습니다. 다시 시도해주세요.')),
-        );
-      }
-    }
   }
 
   Future<void> _fetchUserData() async {
@@ -107,7 +63,7 @@ class _EditProfileState extends State<EditProfile> {
         'weight': _weightController.text,
       });
 
-      Navigator.pop(context);
+      Navigator.pop(context, 'updated');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('프로필이 업데이트되었습니다.')),
@@ -177,7 +133,6 @@ class _EditProfileState extends State<EditProfile> {
                       bottom: 0,
                       right: 0,
                       child: InkWell(
-                        onTap: _pickImage,
                         child: CircleAvatar(
                           backgroundColor: Colors.blue,
                           radius: 20,

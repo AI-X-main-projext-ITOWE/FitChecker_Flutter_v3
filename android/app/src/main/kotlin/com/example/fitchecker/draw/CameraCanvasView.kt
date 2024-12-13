@@ -191,10 +191,10 @@ class CameraCanvasView @JvmOverloads constructor(
             matrix.postRotate(360f - rotationDegrees.toFloat(), imageWidth / 2f, imageHeight / 2f)
 
         when(rotationDegrees) {
-            90 -> matrix.postScale(1f, -1f, imageWidth / 2f, imageHeight / 2f)
-            180 -> matrix.postScale(-1f, 1f, imageWidth / 2f, imageHeight / 2f)
-            270 -> matrix.postScale(1f, 1f, imageWidth / 2f, imageHeight / 2f)
-            else -> matrix.postScale(-1f, 1f, imageWidth / 2f, imageHeight / 2f)
+            90 -> matrix.postScale(-1f, 1f, imageWidth / 2f, imageHeight / 2f)
+            180 -> matrix.postScale(-1f, -1f, imageWidth / 2f, imageHeight / 2f)
+            270 -> matrix.postScale(1f, -1f, imageWidth / 2f, imageHeight / 2f)
+            else -> matrix.postScale(1f, 1f, imageWidth / 2f, imageHeight / 2f)
         }
         matrix.postScale(scaleFactor,scaleFactor)
         matrix.postTranslate(xOffset, yOffset) //preTranslate 이동후에 스케일이나 회전이 진행됨.

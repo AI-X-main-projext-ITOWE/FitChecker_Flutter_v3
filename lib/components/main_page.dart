@@ -1,3 +1,4 @@
+import 'package:fitchecker/components/exerciseGraph.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -8,17 +9,22 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
-        child: Column(
-          children: [
-            SizedBox(height: 20.0),
-            // Swiper
-            _buildSwiper(context),
-            SizedBox(height: 20.0),
-            // 두 번째 메뉴
-            _buildExerciseList(context), // 수정된 부분
-          ],
+    return Scaffold(
+      backgroundColor: Colors.grey[200], // 배경색을 흰색으로 설정
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(height: 20.0),
+              ExerciseGraph(),
+              SizedBox(height: 20.0),
+              // Swiper
+              _buildSwiper(context),
+              SizedBox(height: 20.0),
+              // 두 번째 메뉴
+              _buildExerciseList(context), // 수정된 부분
+            ],
+          ),
         ),
       ),
     );
@@ -34,10 +40,10 @@ class MainPage extends StatelessWidget {
 
 
         return ClipRRect(
-          borderRadius: BorderRadius.circular(30.0), // 모서리를 둥글게 설정
+          borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정
           child: Container(
             width: screenWidth * 0.9, // 화면 너비의 90%
-            height: screenWidth * 0.9, // 화면 너비의 40%
+            height: screenWidth * 0.3, // 화면 너비의 40%
             child: Swiper(
               itemBuilder: (BuildContext context, int index) {
                 final imagePaths = [
@@ -93,16 +99,23 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _buildExerciseList(BuildContext context) {
+      double screenWidth = MediaQuery
+          .of(context)
+          .size
+          .width; // 화면 너비
+
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Column(
+      child: Container(
+        width: screenWidth * 0.9,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "운동 계획하기",
+            "● 운동 계획하기",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 4),
           Container(
             height: 120,
             child: ListView(
@@ -116,6 +129,7 @@ class MainPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

@@ -1,8 +1,7 @@
 import 'package:fitchecker/components/bouncyText.dart';
 import 'package:flutter/material.dart';
-
-import '../scrreens/notifications_screen.dart';
-import '../scrreens/settings_screen.dart';
+import 'package:fitchecker/screens/notifications_screen.dart';
+import 'package:fitchecker/screens/settings_screen.dart';
 
 class Header extends StatelessWidget {
   final double height;

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitchecker/models/user_model.dart';
-import 'package:fitchecker/scrreens/user_info_screen.dart';
+import 'package:fitchecker/screens/user_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitchecker/services/auth_service.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
