@@ -64,7 +64,6 @@ class _MyProfileState extends State<MyProfile> {
             .doc(uid)
             .collection('exercise_days')
             .orderBy('exerciseDate')
-            .startAt([today])
             .get();
 
         final Map<String, List<Map<String, dynamic>>> exerciseData = {};
@@ -176,9 +175,9 @@ class _MyProfileState extends State<MyProfile> {
                     SizedBox(height: 16),
                     // 상세정보 보기 버튼
                     ElevatedButton(
-                      onPressed: () {
-                        // Navigator로 화면 전환 (밑에서 위로 올라오는 애니메이션)
-                        Navigator.of(context).push(
+                      onPressed: () async {
+                        // EditProfile 화면을 열고 결과를 기다립니다.
+                        final result = await Navigator.of(context).push(
                           PageRouteBuilder(
                             pageBuilder: (context, animation, secondaryAnimation) => EditProfile(),
                             transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -196,6 +195,12 @@ class _MyProfileState extends State<MyProfile> {
                             },
                           ),
                         );
+
+                        // 결과가 'updated'인 경우 데이터를 다시 불러옵니다.
+                        if (result == 'updated') {
+                          _fetchUserData();
+                          _fetchExerciseData();
+                        }
                       },
                       child: Text('프로필 수정'),
                       style: ElevatedButton.styleFrom(

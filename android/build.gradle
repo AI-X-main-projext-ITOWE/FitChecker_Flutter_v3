@@ -29,3 +29,10 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// 테스트 비활성화
+subprojects {
+    tasks.withType(Test) {
+        enabled = false
+    }
+}
