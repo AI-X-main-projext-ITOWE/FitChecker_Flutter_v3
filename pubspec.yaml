@@ -52,7 +52,7 @@ dependencies:
   flutter_markdown: ^0.6.10
   firebase_database: ^11.1.2
   fl_chart: ^0.69.2
-
+  firebase_messaging: ^15.1.6
 
 
 
