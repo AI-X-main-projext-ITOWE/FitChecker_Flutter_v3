@@ -50,10 +50,14 @@ dependencies:
   table_calendar: ^3.1.2
   flutter_markdown: ^0.7.3
   firebase_database: ^11.1.2
-  fl_chart: ^0.69.0
   shared_preferences: ^2.3.2
+  fl_chart: ^0.69.2
+  firebase_messaging: ^15.1.6
 
 
+  flutter_local_notifications: ^18.0.0
+  path_provider: ^2.0.11 #캐시 삭제에 필요
+  provider: ^6.1.2
 
 
 dev_dependencies:
