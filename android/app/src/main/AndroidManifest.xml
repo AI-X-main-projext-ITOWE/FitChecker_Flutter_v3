@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.fitchecker">
 
     <!-- 카메라 및 외부 저장소 접근 권한 선언 -->
@@ -18,8 +19,34 @@
     <uses-feature android:name="android.hardware.camera" android:required="true" />
 
     <application
+        android:name=".FitCheckerApplication"
         android:label="fitchecker"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- Firebase 서비스 초기화 -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="true"
+            tools:replace="android:exported">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Firebase 메시징 서비스에 대한 설정 -->
+        <service
+            android:name="com.example.fitchecker.MyFirebaseMessagingService"
+            android:exported="true"
+            tools:replace="android:exported">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- 알림 채널 정의 (안드로이드 8.0 이상 필수) -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
 
         <!-- MainActivity는 앱의 런처 액티비티 -->
         <activity
@@ -56,7 +83,7 @@
         <activity
             android:name="com.example.fitchecker.CameraNativeActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat"> <!-- Theme.AppCompat 테마 적용 -->
+            android:theme="@style/Theme.AppCompat">
             <!-- Flutter 초기화 시 적용되는 테마 -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
@@ -88,4 +115,5 @@
             <data android:scheme="https" />
         </intent>
     </queries>
+
 </manifest>
