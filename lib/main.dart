@@ -1,4 +1,4 @@
-import 'package:fitchecker/scrreens/splash_screen.dart';
+import 'package:fitchecker/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

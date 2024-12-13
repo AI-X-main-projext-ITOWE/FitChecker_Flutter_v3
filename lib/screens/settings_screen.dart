@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import '../components/notification_helper.dart';
-import 'cache_management_screen.dart';
-import 'login_screen.dart';
-import 'notice_screen.dart';
+import 'package:fitchecker/components/notification_helper.dart';
+import 'package:fitchecker/screens/cache_management_screen.dart';
+import 'package:fitchecker/screens/login_screen.dart';
+import 'package:fitchecker/screens/notice_screen.dart';
 
 
 class SettingsScreen extends StatefulWidget { // 수정: StatefulWidget으로 변경

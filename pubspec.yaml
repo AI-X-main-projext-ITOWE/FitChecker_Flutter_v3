@@ -56,7 +56,7 @@ dependencies:
 
 
   flutter_local_notifications: ^18.0.0
-  path_provider: ^2.0.11 #캐시 삭제에 필요
+  path_provider: ^2.1.4 #캐시 삭제에 필요
   provider: ^6.1.2
 
 
