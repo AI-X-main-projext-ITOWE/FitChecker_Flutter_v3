@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'components/notification_helper.dart';
 void main() async {
   // .env 파일 로드
   await dotenv.load(fileName: "assets/config/.env");
@@ -26,8 +28,17 @@ void main() async {
   print("FCM Token: $token");
 
   runApp(const MyApp());
-}
+  // NotificationHelper 초기화
+  final NotificationHelper notificationHelper = NotificationHelper();
+  await notificationHelper.initializeNotifications();
 
+  runApp(
+    Provider<NotificationHelper>(
+      create: (_) => notificationHelper,
+      child: MyApp(),
+    ),
+  );
+}
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
