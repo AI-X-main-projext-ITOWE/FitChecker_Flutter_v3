@@ -63,7 +63,7 @@ class _EditProfileState extends State<EditProfile> {
         'weight': _weightController.text,
       });
 
-      Navigator.pop(context);
+      Navigator.pop(context, 'updated');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('프로필이 업데이트되었습니다.')),
