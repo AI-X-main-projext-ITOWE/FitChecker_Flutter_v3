@@ -5,4 +5,5 @@
     <string name="stop_capture">Stop Capture</string>
     <string name="return_main">Return Main</string>
     <string name="_00">0</string>
+    <string name="default_notification_channel_id">default_channel</string>
 </resources>
