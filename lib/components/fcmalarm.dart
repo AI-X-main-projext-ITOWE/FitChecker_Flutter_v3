@@ -32,13 +32,22 @@ class _AlarmListPageState extends State<AlarmListPage> {
           };
         }).toList();
 
-        // 최신 날짜 순으로 정렬 (내림차순 정렬)
-        _alarms.sort((a, b) => b['alarm_time'].compareTo(a['alarm_time']));
+        // 최신 날짜 순으로 정렬 (null 값 처리 포함)
+        _alarms.sort((a, b) {
+          final timeA = a['alarm_time'];
+          final timeB = b['alarm_time'];
+
+          if (timeA == null && timeB == null) return 0; // 둘 다 null인 경우
+          if (timeA == null) return 1; // a가 null이면 b를 앞에 둠
+          if (timeB == null) return -1; // b가 null이면 a를 앞에 둠
+          return timeB.compareTo(timeA); // 내림차순 정렬
+        });
       });
     } else {
       print("No data found");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
