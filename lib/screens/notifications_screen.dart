@@ -17,8 +17,3 @@ class NotificationsScreen extends StatelessWidget {
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    home: NotificationsScreen(), // 기본 화면 설정
-  ));
-}

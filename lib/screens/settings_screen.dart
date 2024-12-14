@@ -18,8 +18,7 @@ class SettingsScreen extends StatefulWidget { // 수정: StatefulWidget으로 �
 class _SettingsScreenState extends State<SettingsScreen> {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
-  late bool _isNotificationOn; // 알림 상태 관리
-
+  bool? _isNotificationOn; // 초기값을 null로 설정
 
   @override
   void initState() {
@@ -33,21 +32,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Provider.of<NotificationHelper>(context, listen: false);
     bool preference = await notificationHelper.getNotificationPreference();
     setState(() {
-      _isNotificationOn = preference;
+      _isNotificationOn = preference; // 초기화된 값을 설정
     });
   }
-
 
   // 로그아웃 함수
   Future<void> _signOut(BuildContext context) async {
     try {
-      // 구글 로그아웃
       await _auth.signOut();
       await _googleSignIn.signOut();
       await _auth.currentUser?.reload();
       print("로그아웃 성공!");
 
-      // 로그아웃 후 로그인 화면으로 이동
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -79,8 +75,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 ListTile(
                   title: const Text('알림 설정'),
-                  trailing: Switch(
-                    value: _isNotificationOn,
+                  trailing: _isNotificationOn == null
+                      ? const CircularProgressIndicator() // 로딩 중에는 스피너 표시
+                      : Switch(
+                    value: _isNotificationOn!,
                     onChanged: (value) async {
                       await notificationHelper.setNotificationPreference(value);
                       setState(() {
@@ -98,9 +96,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const Divider(), // 구분선
                 ListTile(
-                  title: const Text('공지사항'), // 공지사항 항목
+                  title: const Text('공지사항'),
                   onTap: () {
-                    // 공지사항 클릭 시 NoticeScreen으로 이동
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const NoticeScreen()),
@@ -110,39 +107,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(),
                 ListTile(
                   title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // 텍스트 간 간격을 띄움
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text('버전 정보'), // 버전 정보 제목
-                      Text('1.0.(현재버전)'), // 현재 버전 표시
+                      Text('버전 정보'),
+                      Text('1.0.(현재버전)'),
                     ],
                   ),
                 ),
                 const Divider(),
                 ListTile(
-                  title: const Text('캐시 데이터 삭제'), // 캐시 데이터 삭제 항목
+                  title: const Text('캐시 데이터 삭제'),
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const CacheManagementScreen())
+                      context,
+                      MaterialPageRoute(builder: (context) => const CacheManagementScreen()),
                     );
                   },
                 ),
                 const Divider(),
                 ListTile(
-                  title: const Text('로그아웃'), // 로그아웃 항목
+                  title: const Text('로그아웃'),
                   onTap: () async {
-                    await _signOut(context); // 로그아웃 처리
+                    await _signOut(context);
                   },
                 ),
                 const Divider(),
                 ListTile(
-                  title: const Text('탈퇴하기'), // 계정 탈퇴 항목
+                  title: const Text('탈퇴하기'),
                   onTap: () {
-                    // 계정 탈퇴 처리 로직 추가 필요
                     print('계정 탈퇴 클릭됨');
                   },
                 ),
-                const Divider(), // 구분선
+                const Divider(),
               ],
             ),
           ),
@@ -150,13 +146,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-}
-
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: SettingsScreen(), // 기본 화면 설정
-    ),
-  );
 }
