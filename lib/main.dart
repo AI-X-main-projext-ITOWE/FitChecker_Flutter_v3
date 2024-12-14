@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'components/notification_helper.dart';  // Provider import
 
@@ -12,6 +13,10 @@ void main() async {
 
   // .env 파일 로드
   await dotenv.load(fileName: "assets/config/.env");
+  final String appkey = dotenv.get("KAKAO_APP_KEY");
+
+  // Kakao SDK 초기화
+  KakaoSdk.init(nativeAppKey: appkey);
 
   // Firebase 초기화
   await Firebase.initializeApp();
