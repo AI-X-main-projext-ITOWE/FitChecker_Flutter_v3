@@ -78,13 +78,13 @@ class _ChatbotState extends State<Chatbot> {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
-        body: json.encode({
+        body: json.encode({{
           "user_id": _userId,
-          "user_age": _userAge,
-          "user_height": _userHeight,
-          "user_weight": _userWeight,
-          "user_gender": _userGender,
-          "question": question
+          "age": _userAge,
+          "height": _userHeight,
+          "weight": _userWeight,
+          "gender": _userGender,
+          "question": question}
         }),
       );
 

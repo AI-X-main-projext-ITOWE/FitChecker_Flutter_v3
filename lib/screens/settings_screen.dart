@@ -116,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const Divider(),
                 ListTile(
-                  title: const Text('캐시 데이터 삭제'),
+                  title: const Text('캐시 삭제'),
                   onTap: () {
                     Navigator.push(
                       context,

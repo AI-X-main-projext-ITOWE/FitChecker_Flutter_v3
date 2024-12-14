@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '푸시 알림 예제',
       theme: ThemeData(primarySwatch: Colors.blue),
+      debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );
   }

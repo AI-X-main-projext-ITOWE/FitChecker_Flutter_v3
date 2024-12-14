@@ -124,7 +124,6 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
 
     // List of exercise names and their counts
     final exerciseNames = counterSumByExercise.keys.toList();
-    final exerciseCounts = counterSumByExercise.values.toList();
 
     return Center(
       child: Column(
