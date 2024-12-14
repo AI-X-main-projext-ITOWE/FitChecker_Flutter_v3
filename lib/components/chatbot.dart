@@ -19,9 +19,9 @@ class _ChatbotState extends State<Chatbot> {
   final List<Map<String, String>> _messages = []; // 메시지 리스트
   bool _isWaitingForResponse = false; // 응답 대기 상태
   String _userId = "";
-  String _userAge = "";
-  String _userHeight = "";
-  String _userWeight = "";
+  int _userAge = 0;
+  double _userHeight = 0;
+  double _userWeight = 0;
   String _userGender = "";
 
 
@@ -44,9 +44,9 @@ class _ChatbotState extends State<Chatbot> {
 
         if(snapshot.exists){
           _userId = user.uid;
-          _userAge = snapshot['age'];
-          _userHeight = snapshot['height'];
-          _userWeight = snapshot['weight'];
+          _userAge = int.parse(snapshot['age']);
+          _userHeight = double.parse(snapshot['height']);
+          _userWeight = double.parse(snapshot['weight']);
           _userGender = snapshot['gender'];
         }
 
@@ -78,33 +78,30 @@ class _ChatbotState extends State<Chatbot> {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
-        body: json.encode({{
-          "user_id": _userId,
-          "age": _userAge,
-          "height": _userHeight,
-          "weight": _userWeight,
-          "gender": _userGender,
-          "question": question}
+        body: json.encode({
+          "request": {
+            "user_id": _userId,
+            "age": _userAge,
+            "height": _userHeight,
+            "weight": _userWeight,
+            "gender": _userGender,
+            "question": question,
+          },
+          "audio_bytes": "string"
         }),
       );
 
       if (response.statusCode == 200) {
-        // UTF-8로 응답 데이터를 디코딩
+        // JSON 응답 파싱
         final responseData = json.decode(utf8.decode(response.bodyBytes));
 
-        if(responseData[""] != null){
-
-        }
-
-        // 응답 데이터가 리스트인지 확인 후 처리
-        final responseText = (responseData["response"] is List)
-            ? responseData["response"].join("\n\n") // 리스트의 내용을 합침
-            : responseData["response"]; // 단일 문자열일 경우 그대로 사용
+        // response.advice_response.response에서 내용 가져오기
+        final adviceResponse = responseData['response']?['advice_response']?['response'] ?? "응답을 처리할 수 없습니다.";
 
         setState(() {
           // "답변 생성 중" 메시지를 교체
           _messages.removeLast();
-          _messages.add({"sender": "bot", "text": responseText});
+          _messages.add({"sender": "bot", "text": adviceResponse});
         });
       } else {
         setState(() {
