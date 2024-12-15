@@ -108,149 +108,138 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      // 데이터 로딩 중일 때 로딩 인디케이터 표시
       return Center(child: CircularProgressIndicator());
     }
 
-    // 화면 너비를 가져와 그래프 크기 설정
     double screenWidth = MediaQuery.of(context).size.width;
-    double chartSize = screenWidth * 0.9; // 화면 너비의 90%
+    double chartSize = screenWidth * 0.9;
 
-    // Y축의 최댓값과 최솟값 계산
     int maxCounter = counterSumByExercise.values.isNotEmpty
         ? counterSumByExercise.values.reduce((a, b) => a > b ? a : b)
         : 0;
     double adjustedMaxY = (maxCounter * 1.2).ceilToDouble();
 
-    // List of exercise names and their counts
     final exerciseNames = counterSumByExercise.keys.toList();
+
+    // 일주일간 총 운동 시간
+    int totalTime = timeSumByExercise.values.fold(0, (sum, time) => sum + time);
 
     return Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center, // 여기 수정
         children: [
           Text(
             "● 운동 기록 (지난 7일)",
             style: TextStyle(fontSize: 16, color: Colors.black),
           ),
           SizedBox(height: 8),
-          // Stack to overlay dots on top of the bar chart
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              // 그래프에 border-radius를 추가하고, 위와 아래 글자가 잘리지 않도록 패딩을 추가
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16), // border-radius 추가
-                clipBehavior: Clip.antiAlias, // 클리핑 설정
-                child: Container(
-                  padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20), // 패딩 조정
-                  width: chartSize,
-                  height: chartSize, // 컨테이너 높이 추가 증가
-                  color: Colors.grey[900], // 어두운 배경색 설정
-                  child: BarChart(
-                    BarChartData(
-                      backgroundColor: Colors.transparent, // Container의 배경색 사용
-                      minY: 0,
-                      maxY: adjustedMaxY,
-                      barGroups: _generateBarGroups(),
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: false,
-                            interval: adjustedMaxY / 5,
-                            getTitlesWidget: (value, meta) {
-                              return Text(
-                                value.toInt().toString(),
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 10,
+          // 기존 그래프를 중앙 정렬
+          Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  clipBehavior: Clip.antiAlias,
+                  child: Container(
+                    padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
+                    width: chartSize,
+                    height: chartSize,
+                    color: Colors.grey[900],
+                    child: BarChart(
+                      BarChartData(
+                        backgroundColor: Colors.transparent,
+                        minY: 0,
+                        maxY: adjustedMaxY,
+                        barGroups: _generateBarGroups(),
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                if (value.toInt() < exerciseNames.length) {
+                                  String exercise = exerciseNames[value.toInt()];
+                                  return SideTitleWidget(
+                                    axisSide: meta.axisSide,
+                                    child: Text(
+                                      exercise,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            ),
+                          ),
+                          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        gridData: FlGridData(
+                          show: true,
+                          drawHorizontalLine: true,
+                          horizontalInterval: adjustedMaxY / 5,
+                          getDrawingHorizontalLine: (value) {
+                            return FlLine(
+                              color: Colors.white12,
+                              strokeWidth: 1,
+                            );
+                          },
+                          drawVerticalLine: false,
+                        ),
+                        alignment: BarChartAlignment.spaceAround,
+                        barTouchData: BarTouchData(
+                          enabled: true,
+                          touchTooltipData: BarTouchTooltipData(
+                            tooltipRoundedRadius: 8,
+                            tooltipPadding: EdgeInsets.all(8),
+                            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                              String exercise = counterSumByExercise.keys.toList()[group.x.toInt()];
+                              return BarTooltipItem(
+                                '$exercise\n',
+                                TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
                                 ),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: '${rod.toY.toInt()} 회',
+                                    style: TextStyle(
+                                      color: Colors.yellowAccent,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               );
                             },
                           ),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              if (value.toInt() < exerciseNames.length) {
-                                String exercise = exerciseNames[value.toInt()];
-                                return SideTitleWidget(
-                                  axisSide: meta.axisSide,
-                                  child: Text(
-                                    exercise,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                return Container();
-                              }
-                            },
-                          ),
-                        ),
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false), // 위 숫자 제거
-                        ),
-                        rightTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: false), // 오른쪽 숫자 제거
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      gridData: FlGridData(
-                        show: true,
-                        drawHorizontalLine: true,
-                        horizontalInterval: adjustedMaxY / 5,
-                        getDrawingHorizontalLine: (value) {
-                          return FlLine(
-                            color: Colors.white12,
-                            strokeWidth: 1,
-                          );
-                        },
-                        drawVerticalLine: false,
-                      ),
-                      alignment: BarChartAlignment.spaceAround,
-                      // 툴팁 설정
-                      barTouchData: BarTouchData(
-                        enabled: true,
-                        touchTooltipData: BarTouchTooltipData(
-                          tooltipRoundedRadius: 8, // 툴팁의 둥근 모서리
-                          tooltipPadding: EdgeInsets.all(8), // 툴팁 내부 패딩
-                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                            String exercise = counterSumByExercise.keys.toList()[group.x.toInt()];
-                            return BarTooltipItem(
-                              '$exercise\n',
-                              TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: '${rod.toY.toInt()} 회',
-                                  style: TextStyle(
-                                    color: Colors.yellowAccent,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          SizedBox(height: 16),
+          // 추가된 부분
+          ExerciseSummary(
+            totalTime: totalTime,
+            exerciseCounts: counterSumByExercise,
+          ),
+          SizedBox(height: 16),
         ],
       ),
     );
   }
+
 
   List<BarChartGroupData> _generateBarGroups() {
     final keys = counterSumByExercise.keys.toList();
@@ -277,5 +266,105 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
     }
 
     return barGroups;
+  }
+}
+
+class ExerciseSummary extends StatelessWidget {
+  final int totalTime; // 총 운동 시간
+  final Map<String, int> exerciseCounts; // 운동별 총 횟수
+  final Map<String, double> caloriesPerMinute = {
+    'push-up': 3.5,
+    'pull-up': 4.0,
+    'squat': 5.0,
+    'sit-up': 3.0,
+  };
+
+  ExerciseSummary({required this.totalTime, required this.exerciseCounts});
+
+  double _calculateTotalCalories() {
+    double totalCalories = 0;
+    exerciseCounts.forEach((exerciseName, count) {
+      double calories = caloriesPerMinute[exerciseName] ?? 0;
+      totalCalories += (calories * count / 60); // 칼로리 계산
+    });
+    return totalCalories;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double totalCalories = _calculateTotalCalories();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // 총 운동 시간 컨테이너
+        Container(
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: MediaQuery.of(context).size.width * 0.4,
+          decoration: BoxDecoration(
+            color: Color(0xFF212121),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "총 운동 시간",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "${(totalTime ~/ 60)}분 ${totalTime % 60}초",
+                  style: TextStyle(
+                    color: Colors.yellowAccent,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // 소모 칼로리 컨테이너
+        Container(
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: MediaQuery.of(context).size.width * 0.4,
+          decoration: BoxDecoration(
+            color: Color(0xFF212121),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "소모 칼로리",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "${totalCalories.toStringAsFixed(1)} kcal",
+                  style: TextStyle(
+                    color: Colors.yellowAccent,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
