@@ -1,3 +1,4 @@
+import 'package:fitchecker/screens/privacy_policy_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,8 @@ import 'package:fitchecker/components/notification_helper.dart';
 import 'package:fitchecker/screens/cache_management_screen.dart';
 import 'package:fitchecker/screens/login_screen.dart';
 import 'package:fitchecker/screens/notice_screen.dart';
+
+import 'about_screen.dart';
 
 
 class SettingsScreen extends StatefulWidget { // 수정: StatefulWidget으로 변경
@@ -105,14 +108,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
                 const Divider(),
+
                 ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text('버전 정보'),
-                      Text('1.0.(현재버전)'),
-                    ],
-                  ),
+                  title: const Text('개인정보 처리방침'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
+                    );
+                  },
                 ),
                 const Divider(),
                 ListTile(
@@ -136,6 +140,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: const Text('탈퇴하기'),
                   onTap: () {
                     print('계정 탈퇴 클릭됨');
+                  },
+                ),
+                const Divider(),
+                ListTile(
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text('앱 정보'),
+                      Text('1.0.0 (현재버전)', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AboutScreen()),
+                    );
                   },
                 ),
                 const Divider(),
