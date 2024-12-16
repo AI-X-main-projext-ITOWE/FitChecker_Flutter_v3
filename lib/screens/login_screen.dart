@@ -248,7 +248,7 @@ class LoginScreen extends StatelessWidget {
       // 로그인 성공 후 홈 화면으로 이동
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>  LoginScreen()),
+        MaterialPageRoute(builder: (context) =>   HomeScreen()),
       );
     } catch (e) {
       print('카카오 로그인 실패: $e');

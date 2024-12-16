@@ -53,6 +53,7 @@ dependencies:
   fl_chart: ^0.69.0
   shared_preferences: ^2.3.2
   firebase_messaging: ^15.1.6
+  kakao_flutter_sdk: ^1.9.6
 
 
   flutter_local_notifications: ^18.0.0
