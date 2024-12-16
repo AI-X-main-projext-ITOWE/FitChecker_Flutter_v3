@@ -9,8 +9,8 @@ class SpeakManager {
     private lateinit var rightMediaPlayer: MediaPlayer
     private lateinit var leftAssetFileDescriptor: AssetFileDescriptor
     private lateinit var rightAssetFileDescriptor: AssetFileDescriptor
-    private val leftFileName = "voice/exerciseCall.m4a"
-    private val rightFileName = "voice/exerciseCall.m4a"
+    private val leftFileName = "voice/L.m4a"
+    private val rightFileName = "voice/R.m4a"
 
     fun audioFromAssets(context: Context) {
         try {
