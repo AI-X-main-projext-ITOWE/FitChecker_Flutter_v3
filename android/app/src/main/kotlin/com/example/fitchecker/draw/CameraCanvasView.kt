@@ -128,7 +128,7 @@ class CameraCanvasView @JvmOverloads constructor(
                     lineWrongPaint)
 
             }
-            drawRotation(canvas, exerciseRotation, bodyB)
+            drawRotation(canvas, exerciseRotation, bodyC)
         }
     }
 
