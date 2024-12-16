@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fitchecker/models/user_model.dart';
 import 'home_screen.dart';
@@ -17,6 +18,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   final ageController = TextEditingController();
   final heightController = TextEditingController();
   final weightController = TextEditingController();
+  final fcmTokenController = TextEditingController();
 
   bool isMaleSelected = false;
   bool isFemaleSelected = false;
@@ -152,13 +154,17 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                             heightController.text.isNotEmpty &&
                             weightController.text.isNotEmpty &&
                             (isMaleSelected || isFemaleSelected)) {
+                          final fcmToken = fcmTokenController.text;
                           final age = ageController.text;
                           final height = heightController.text;
                           final weight = weightController.text;
                           final gender = isMaleSelected ? 'male' : 'female';
 
+                          String? fcm_token = await FirebaseMessaging.instance.getToken();
+
                           final userModel = UserModel(
                             id: widget.user.uid,
+                            fcmToken: fcm_token ??'',
                             email: widget.user.email ?? '',
                             name: widget.user.displayName ?? '',
                             age: age,

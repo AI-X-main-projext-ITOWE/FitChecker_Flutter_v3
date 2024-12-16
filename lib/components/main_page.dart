@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 import 'chatbot.dart'; // Chatbot 페이지
 import 'fcmalarm.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +60,7 @@ class MainPage extends StatelessWidget {
                 ),
                 alignment: Alignment.center, // 텍스트 중앙 정렬
                 child: Text(
-                  "운동 계획하기",
+                  "● 운동 계획하기",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white, // 텍스트 색상 흰색
@@ -64,15 +69,17 @@ class MainPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 4),
+            SizedBox(height: 12),
             Container(
-              height: 120,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
+              height: 80,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 균등한 간격 배치
                 children: [
                   _buildExerciseCard(context, "assets/images/routine.png", "운동 시작", ChoiceExercise()),
-                  _buildExerciseCard(context, "assets/images/diet.png", "식단 짜기", Chatbot(initialMessage: '식단 짜줘',)),
-                  _buildExerciseCard(context, "assets/images/alarm.png", "운동 알림설정", AlarmListPage()),
+                  _buildExerciseCard(context, "assets/images/routine.png", "운동 설계", Chatbot(initialMessage: '내 신체 정보에 알맞는 운동 루틴 설계해 줘.')),
+                  _buildExerciseCard(context, "assets/images/diet.png", "식단 짜기", Chatbot(initialMessage: '내 신체 정보에 알맞는 추천 식단 짜 줘.')),
+                  _buildExerciseCard(context, "assets/images/alarm.png", "알람 확인", AlarmListPage()),
                 ],
               ),
             ),
@@ -83,37 +90,37 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _buildExerciseCard(BuildContext context, String imagePath, String title, Widget targetPage) {
-    return GestureDetector(
-      onTap: () {
-        // 카드 클릭 시 해당 페이지로 이동
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => targetPage),
-        );
-      },
-      child: Container(
-        width: 100,
-        margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                imagePath,
-                width: 30, // 이미지 크기
-                height: 30,
-                fit: BoxFit.cover,
-              ),
-              SizedBox(height: 5),
-              Text(
-                title,
-                style: TextStyle(fontSize: 12),
-              ),
-            ],
+    return Center( // 가로 중앙 정렬
+      child: GestureDetector(
+        onTap: () {
+          // 카드 클릭 시 해당 페이지로 이동
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => targetPage),
+          );
+        },
+        child: Container(
+          width: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  imagePath,
+                  width: 30, // 이미지 크기
+                  height: 30,
+                  fit: BoxFit.cover,
+                ),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
           ),
         ),
       ),

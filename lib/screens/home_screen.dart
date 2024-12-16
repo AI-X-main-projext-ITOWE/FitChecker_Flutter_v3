@@ -1,6 +1,4 @@
-import 'package:fitchecker/components/chatbot.dart';
 import 'package:fitchecker/components/choice_exercise.dart';
-import 'package:fitchecker/components/my_profile.dart';
 import 'package:fitchecker/components/footer.dart';
 import 'package:fitchecker/components/header.dart';
 import 'package:fitchecker/components/main_page.dart';
@@ -39,10 +37,10 @@ class _MainScreenState extends State<HomeScreen> {
         final destination = call.arguments['destination'];
         if (destination == 'home') {
           // MainPage로 이동
-          setState(() {
-            _currentIndex = 0;
+          setState(() async {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(),)
+            );
           });
-          _pageController.jumpToPage(0);
         }
       }
     });
@@ -227,26 +225,15 @@ class _MainScreenState extends State<HomeScreen> {
               ],
             ),
             child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
-                  PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 300), // 전환 애니메이션 시간
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        ChoiceExercise(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      // 오른쪽에서 슬라이드 전환
-                      return SlideTransition(
-                        position: Tween<Offset>(
-                          begin: Offset(1.0, 0.0), // 오른쪽에서 시작
-                          end: Offset.zero, // 화면의 원래 위치
-                        ).animate(animation),
-                        child: child,
-                      );
-                    },
-                  ),
+                  MaterialPageRoute(builder: (context) => ChoiceExercise()),
                 );
+                setState(() {
+                  _currentIndex = 0; // 필요한 초기화 로직
+                  _pageController.jumpToPage(_currentIndex); // PageView 갱신
+                });
               },
               elevation: 0, // 기본 그림자 제거
               backgroundColor: Colors.transparent, // 백그라운드 투명

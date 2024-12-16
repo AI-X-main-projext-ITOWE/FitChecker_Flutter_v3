@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitchecker/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fitchecker/components/camera.dart';
@@ -133,7 +134,7 @@ class _ChoiceExerciseState extends State<ChoiceExercise> {
                       ),
                       IconButton(
                         icon: Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context), // 팝업 닫기
+                        onPressed: () async => await Navigator.push(context,MaterialPageRoute(builder: (context) => HomeScreen())), // 팝업 닫기
                       ),
                     ],
                   ),
