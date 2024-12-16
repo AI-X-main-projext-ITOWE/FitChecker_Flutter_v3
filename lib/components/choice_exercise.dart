@@ -252,7 +252,7 @@ class _ChoiceExerciseState extends State<ChoiceExercise> {
     final screenHeight = MediaQuery.of(context).size.height * (1 - 0.32);
 
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFF), // 배경색 설정
+      backgroundColor: Colors.grey[200], // 배경색 설정
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(screenWidth * 0.05), // 화면 크기에 비례한 여백

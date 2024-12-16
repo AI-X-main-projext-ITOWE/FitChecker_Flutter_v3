@@ -74,34 +74,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '푸시 알림 예제',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(),
-    );
-  }
-}
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-
-    // 포그라운드 메시지 처리
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("포그라운드 메시지 수신: ${message.messageId}");
-      showLocalNotification(message); // 로컬 알림 표시
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("FCM 로컬 알림 예제 앱")),
     );
   }
 }

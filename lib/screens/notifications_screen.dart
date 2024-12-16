@@ -9,7 +9,7 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: Center(
         child: Text(
-          '알림 화면', // 본문에 텍스트 표시
+          '알림이 없습니다.', // 본문에 텍스트 표시
           style: TextStyle(fontSize: 24),
         ),
       ),

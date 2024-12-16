@@ -115,30 +115,162 @@ class _MyProfileState extends State<MyProfile> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
+        // 전체 소모 칼로리 계산
+        double totalCalories = exercises.fold(0, (sum, exercise) {
+          double caloriesPerMinute = 0;
+
+          switch (exercise['exerciseName']) {
+            case 'push-up':
+              caloriesPerMinute = 3.5;
+              break;
+            case 'pull-up':
+              caloriesPerMinute = 4.0;
+              break;
+            case 'squat':
+              caloriesPerMinute = 5.0;
+              break;
+            case 'sit-up':
+              caloriesPerMinute = 3.0;
+              break;
+          }
+
+          int timeInSeconds = int.tryParse(exercise['exerciseTime']) ?? 0;
+
+          return sum + (caloriesPerMinute * (timeInSeconds / 60));
+        });
+
+        return Wrap(
+          children: [
+            Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: exercises.length,
-                itemBuilder: (context, index) {
-                  final exercise = exercises[index];
-                  return ListTile(
-                    title: Text("운동 이름: ${exercise['exerciseName']}"),
-                    subtitle: Text(
-                      "총 횟수: ${exercise['totalCounter']}회\n"
-                          "운동 시간: ${exercise['exerciseTime']}초",
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // 높이를 내용에 맞게 자동 조정
+                children: [
+                  // 소모 칼로리 창 (X 버튼 포함)
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF6C2FF2), // 보라색 배경
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     ),
-                  );
-                },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "소모 칼로리 : ${totalCalories.toStringAsFixed(1)} kcal",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context); // 팝업 닫기
+                          },
+                          child: Icon(
+                            Icons.close, // X 아이콘
+                            color: Colors.white, // 흰색
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true, // 높이를 데이터 크기에 맞게 설정
+                    physics: NeverScrollableScrollPhysics(), // 내부 스크롤 비활성화
+                    itemCount: exercises.length,
+                    itemBuilder: (context, index) {
+                      final exercise = exercises[index];
+
+                      // 운동 이름 번역
+                      String translatedName = '';
+                      switch (exercise['exerciseName']) {
+                        case 'push-up':
+                          translatedName = '푸쉬 업';
+                          break;
+                        case 'pull-up':
+                          translatedName = '풀 업';
+                          break;
+                        case 'squat':
+                          translatedName = '스쿼트';
+                          break;
+                        case 'sit-up':
+                          translatedName = '싯 업';
+                          break;
+                      }
+
+                      // 초를 분과 초로 변환
+                      int timeInSeconds = int.tryParse(exercise['exerciseTime']) ?? 0;
+                      int minutes = (timeInSeconds / 60).floor();
+                      int seconds = timeInSeconds % 60;
+
+                      String timeDisplay = minutes > 0
+                          ? "$minutes분 ${seconds}초"
+                          : "${seconds}초";
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 15.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF5F5F5), // 연한 흰색 배경
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    translatedName, // 운동 이름
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF6C2FF2), // 보라색 텍스트
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    timeDisplay, // 운동 시간
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "${exercise['totalCounter']} 회", // 총 횟수
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+          ],
         );
       },
     );
@@ -204,7 +336,11 @@ class _MyProfileState extends State<MyProfile> {
                       },
                       child: Text('프로필 수정'),
                       style: ElevatedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 50), // 버튼의 최소 크기
+                        backgroundColor: Color(0xFF6C2FF2), // 보라색 배경
+                        foregroundColor: Colors.white, // 흰색 글자
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12), // 버튼 패딩
+                        textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        minimumSize: Size(double.infinity, 50),// 텍스트 스타일
                       ),
                     ),
                   ],
@@ -282,6 +418,7 @@ class _MyProfileState extends State<MyProfile> {
                 ),
               ),
             ),
+            SizedBox(height: 16),
           ],
         ),
       ),

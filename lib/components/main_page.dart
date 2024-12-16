@@ -1,7 +1,6 @@
+import 'package:fitchecker/components/choice_exercise.dart';
 import 'package:fitchecker/components/exerciseGraph.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper_view/flutter_swiper_view.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'chatbot.dart'; // Chatbot 페이지
 import 'fcmalarm.dart';
 
@@ -16,86 +15,14 @@ class MainPage extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 20.0),
+              _buildExerciseList(context), // 수정된 부분
               ExerciseGraph(),
               SizedBox(height: 20.0),
-              // Swiper
-              _buildSwiper(context),
-              SizedBox(height: 20.0),
-              // 두 번째 메뉴
-              _buildExerciseList(context), // 수정된 부분
             ],
           ),
         ),
       ),
     );
-  }
-
-  Widget _buildSwiper(BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        double screenWidth = MediaQuery
-            .of(context)
-            .size
-            .width; // 화면 너비
-
-
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정
-          child: Container(
-            width: screenWidth * 0.9, // 화면 너비의 90%
-            height: screenWidth * 0.3, // 화면 너비의 40%
-            child: Swiper(
-              itemBuilder: (BuildContext context, int index) {
-                final imagePaths = [
-                  'assets/images/test_banner01.png',
-                  'assets/images/test_banner02.png',
-                  'assets/images/test_banner03.png',
-                ];
-
-                final urls = [
-                  'https://www.myprotein.co.kr/referrals.list?applyCode=JRHK-RL',
-                  null, // 두 번째 배너는 동작 없음
-                  null, // 세 번째 배너는 동작 없음
-                ];
-
-                return GestureDetector(
-                  onTap: () {
-                    if (urls[index] != null) {
-                      _launchURL(urls[index]!);
-                    }
-                  },
-                  child: Image.asset(
-                    imagePaths[index],
-                    fit: BoxFit.cover,
-                  ),
-                );
-              },
-              itemCount: 3,
-              // 슬라이드 갯수
-              autoplay: true,
-              pagination: SwiperPagination(),
-              // 페이지네이션
-              control: SwiperControl(), // 슬라이더 컨트롤
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _launchURL(String url) async {
-    try {
-      final Uri uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        print('URL launched successfully: $url');
-      } else {
-        print('Cannot launch URL: $url');
-        throw 'Could not launch $url';
-      }
-    } catch (e) {
-      print('Error launching URL: $e');
-    }
   }
 
   Widget _buildExerciseList(BuildContext context) {
@@ -121,8 +48,8 @@ class MainPage extends StatelessWidget {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                // _buildExerciseCard(context, "assets/images/routine.png", "운동 루틴", ExerciseRoutinePage()),
-                _buildExerciseCard(context, "assets/images/diet.png", "식단 짜기", Chatbot(initialMessage: '식단짜줘',)),
+                _buildExerciseCard(context, "assets/images/routine.png", "운동 시작", ChoiceExercise()),
+                _buildExerciseCard(context, "assets/images/diet.png", "식단 짜기", Chatbot(initialMessage: '식단 짜줘',)),
                 _buildExerciseCard(context, "assets/images/alarm.png", "운동 알림설정", AlarmListPage()),
                 // _buildExerciseCard(context, "assets/images/chatbot.png", "챗봇", ChatbotPage()),
               ],
