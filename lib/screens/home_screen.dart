@@ -1,4 +1,5 @@
 import 'package:fitchecker/components/chatbot.dart';
+import 'package:fitchecker/components/choice_exercise.dart';
 import 'package:fitchecker/components/my_profile.dart';
 import 'package:fitchecker/components/footer.dart';
 import 'package:fitchecker/components/header.dart';
@@ -42,12 +43,6 @@ class _MainScreenState extends State<HomeScreen> {
             _currentIndex = 0;
           });
           _pageController.jumpToPage(0);
-        } else if (destination == 'exerciseSelection') {
-          // ChoiceExercise로 이동
-          setState(() {
-            _currentIndex = 1;
-          });
-          _pageController.jumpToPage(1);
         }
       }
     });
@@ -72,7 +67,7 @@ class _MainScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정
           child: Container(
             width: screenWidth * 0.9, // 화면 너비의 90%
-            height: screenWidth * 0.15, // 화면 너비의 30%
+            height: MediaQuery.of(context).size.height * 0.1, // 화면 높이의 10%
             child: Swiper(
               itemBuilder: (BuildContext context, int index) {
                 final imagePaths = [
@@ -149,14 +144,8 @@ class _MainScreenState extends State<HomeScreen> {
         // 눈 내리는 효과
         Positioned.fill(
           child: SnowfallEffect(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.5,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.5,
           ),
         ),
         Scaffold(
@@ -190,7 +179,6 @@ class _MainScreenState extends State<HomeScreen> {
                       },
                       children: [
                         MainPage(),
-                        MyProfile(),
                       ],
                     ),
                   ),
@@ -198,8 +186,26 @@ class _MainScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // 중앙 챗봇 FloatingActionButton
-          floatingActionButton: Container(
+          bottomNavigationBar: Footer(
+            height: dynamicHeight,
+            currentIndex: _currentIndex,
+            onTabSelected: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+              _pageController.animateToPage(
+                index,
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+          ),
+        ),
+        // 고정된 플로팅 액션 버튼
+        Positioned(
+          bottom: 16,
+          left: MediaQuery.of(context).size.width / 2 - 44, // 버튼 중앙 정렬
+          child: Container(
             width: 88,
             height: 88,
             decoration: BoxDecoration(
@@ -225,9 +231,11 @@ class _MainScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 500), // 전환 애니메이션 시간
-                    pageBuilder: (context, animation, secondaryAnimation) => Chatbot(initialMessage: ''),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    transitionDuration: Duration(milliseconds: 300), // 전환 애니메이션 시간
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ChoiceExercise(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
                       // 오른쪽에서 슬라이드 전환
                       return SlideTransition(
                         position: Tween<Offset>(
@@ -243,27 +251,11 @@ class _MainScreenState extends State<HomeScreen> {
               elevation: 0, // 기본 그림자 제거
               backgroundColor: Colors.transparent, // 백그라운드 투명
               child: Icon(
-                Icons.chat_bubble_outline,
+                Icons.fitness_center,
                 size: 36,
                 color: Colors.white, // 아이콘 흰색
               ),
             ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          // 중앙에 위치
-          bottomNavigationBar: Footer(
-            height: dynamicHeight,
-            currentIndex: _currentIndex,
-            onTabSelected: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-              _pageController.animateToPage(
-                index,
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            },
           ),
         ),
       ],

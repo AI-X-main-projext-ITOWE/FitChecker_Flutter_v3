@@ -47,9 +47,7 @@ class _EditProfileState extends State<EditProfile> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('사용자 데이터를 불러오지 못했습니다.')),
-        );
+        _showCenteredMessage('사용자 데이터를 불러오지 못했습니다.');
       }
     }
   }
@@ -65,15 +63,46 @@ class _EditProfileState extends State<EditProfile> {
 
       Navigator.pop(context, 'updated');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('프로필이 업데이트되었습니다.')),
-      );
+      _showCenteredMessage('프로필이 업데이트 되었습니다.');
     } catch (e) {
       print('Error updating user data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('프로필 업데이트에 실패했습니다. 다시 시도해주세요.')),
-      );
+      _showCenteredMessage('프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
     }
+  }
+
+  // 화면 정중앙에 메시지 출력
+  void _showCenteredMessage(String message) {
+    final overlayState = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned.fill(
+        child: Material(
+          color: Colors.black54, // 반투명 배경
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8), // 메시지 배경 반투명 검정
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                message,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white, // 텍스트 흰색
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlayState!.insert(overlayEntry);
+
+    Future.delayed(Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 
   @override
@@ -101,7 +130,7 @@ class _EditProfileState extends State<EditProfile> {
               onPressed: _updateUserData,
               child: Text(
                 "완료",
-                style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 18),
+                style: TextStyle(color: Color(0xFFF6C2FF2), fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
           ],
@@ -134,7 +163,7 @@ class _EditProfileState extends State<EditProfile> {
                       right: 0,
                       child: InkWell(
                         child: CircleAvatar(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Color(0xFFF6C2FF2),
                           radius: 20,
                           child: Icon(Icons.camera_alt, color: Colors.white),
                         ),

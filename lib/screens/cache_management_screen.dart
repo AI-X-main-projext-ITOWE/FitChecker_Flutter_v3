@@ -27,12 +27,43 @@ class _CacheManagementScreenState extends State<CacheManagementScreen> {
   }
 
   // 캐시 삭제 후 상태 갱신
+  // 캐시 삭제 후 상태 갱신
   Future<void> _clearCache() async {
     await _cacheManager.clearAllCache(); // 캐시 삭제
     await _loadCacheSize(); // 삭제 후 캐시 크기 갱신
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("캐시 데이터가 삭제되었습니다.")),
+
+    // 화면 중앙에 메시지 표시
+    _showTopMessage("캐시가 삭제되었습니다.");
+  }
+
+// 화면 중앙 메시지 출력 메서드
+  void _showTopMessage(String message) {
+    OverlayState overlayState = Overlay.of(context)!;
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              message,
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
     );
+
+    overlayState.insert(overlayEntry);
+
+    Future.delayed(Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 
 
@@ -40,7 +71,7 @@ class _CacheManagementScreenState extends State<CacheManagementScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("캐시 데이터 관리"),
+        title: const Text("캐시 관리"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -56,7 +87,7 @@ class _CacheManagementScreenState extends State<CacheManagementScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _clearCache,
-              child: const Text("캐시 데이터 삭제"),
+              child: const Text("캐시 삭제"),
             ),
           ],
         ),
