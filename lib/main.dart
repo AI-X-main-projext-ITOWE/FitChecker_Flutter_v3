@@ -1,12 +1,40 @@
-import 'package:fitchecker/screens/splash_screen.dart';
-import 'package:fitchecker/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:provider/provider.dart';
-import 'components/notification_helper.dart';  // Provider import
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+// 백그라운드 메시지 핸들러
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("백그라운드 메시지 수신: ${message.messageId}");
+  showLocalNotification(message); // 로컬 알림 표시
+}
+
+// 로컬 알림 표시 함수
+void showLocalNotification(RemoteMessage message) async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  AndroidNotificationDetails(
+    'your_channel_id', // 알림 채널 ID
+    'your_channel_name', // 알림 채널 이름
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+
+  const NotificationDetails platformChannelSpecifics =
+  NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.show(
+    0, // Notification ID
+    message.notification?.title ?? '알림', // 제목
+    message.notification?.body ?? '내용',  // 내용
+    platformChannelSpecifics,
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,27 +49,21 @@ void main() async {
   // Firebase 초기화
   await Firebase.initializeApp();
 
-  // FCM 설정
+  // FCM 백그라운드 핸들러 등록
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Flutter Local Notifications 초기화
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings =
+  InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // FCM 토큰 가져오기
   String? fcmToken = await FirebaseMessaging.instance.getToken();
   print("FCM Token: $fcmToken");
 
-  // 예제: 사용자 ID (로그인 구현 후 실제 사용자 ID로 교체)
-  String userId = "12345";
-
-  // 서버로 FCM 토큰 전송
-  if (fcmToken != null) {
-    final apiService = ApiService();
-    await apiService.sendFcmToken(userId, fcmToken);
-  }
-
-  runApp(
-    MultiProvider(
-      providers: [
-        Provider<NotificationHelper>(create: (_) => NotificationHelper()),  // NotificationHelper Provider 추가
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -52,7 +74,34 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '푸시 알림 예제',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: SplashScreen(),
+      home: const MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // 포그라운드 메시지 처리
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("포그라운드 메시지 수신: ${message.messageId}");
+      showLocalNotification(message); // 로컬 알림 표시
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: Text("FCM 로컬 알림 예제 앱")),
     );
   }
 }
