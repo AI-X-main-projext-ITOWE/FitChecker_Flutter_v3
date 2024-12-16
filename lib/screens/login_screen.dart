@@ -15,71 +15,86 @@ class LoginScreen extends StatelessWidget {
       body: Stack(
         children: [
           // 배경 이미지
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/background.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          _buildBackgroundImage(),
           // 반투명 오버레이
-          Container(
-            color: Colors.black.withOpacity(0.5),
-          ),
+          _buildOverlay(),
           // 중앙 컨텐츠
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 타이틀 텍스트
-                  const Text(
-                    "Welcome!",
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Sign in to continue",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  // 구글 로그인 버튼
-                  _buildLoginCard(
-                    context: context,
-                    label: "구글  로그인",
-                    iconPath: 'assets/images/google_icon.png',
-                    backgroundColor: Colors.white,
-                    textColor: Colors.black,
-                    onTap: () => _signInWithGoogle(context),
-                  ),
-                  const SizedBox(height: 20),
-                  // 카카오 로그인 버튼
-                  _buildLoginCard(
-                    context: context,
-                    label: "카카오 로그인",
-                    iconPath: 'assets/images/kakao_icon.png',
-                    backgroundColor: const Color(0xFFFFE812),
-                    textColor: Colors.black,
-                    onTap: () => _signInWithKakao(context),
-                  ),
-                  const SizedBox(height: 30),
-                ],
-              ),
-            ),
-          ),
+          _buildLoginContent(context),
         ],
+      ),
+    );
+  }
+
+  // 배경 이미지
+  Widget _buildBackgroundImage() {
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/background.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  // 반투명 오버레이
+  Widget _buildOverlay() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+    );
+  }
+
+  // 중앙 로그인 컨텐츠
+  Widget _buildLoginContent(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // 타이틀 텍스트
+            const Text(
+              "Welcome!",
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              "Sign in to continue",
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white70,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            // 구글 로그인 버튼
+            _buildLoginCard(
+              context: context,
+              label: "구글 로그인",
+              iconPath: 'assets/images/google_icon.png',
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              onTap: () => _signInWith(context, 'google'),
+            ),
+            const SizedBox(height: 20),
+            // 카카오 로그인 버튼
+            _buildLoginCard(
+              context: context,
+              label: "카카오 로그인",
+              iconPath: 'assets/images/kakao_icon.png',
+              backgroundColor: const Color(0xFFFFE812),
+              textColor: Colors.black,
+              onTap: () => _signInWith(context, 'kakao'),
+            ),
+            const SizedBox(height: 30),
+          ],
+        ),
       ),
     );
   }
@@ -96,17 +111,12 @@ class LoginScreen extends StatelessWidget {
     final ValueNotifier<bool> isPressed = ValueNotifier(false);
 
     return GestureDetector(
-      onTapDown: (_) {
-        isPressed.value = true;
-      },
+      onTapDown: (_) => isPressed.value = true,
       onTapUp: (_) {
-
         isPressed.value = false;
         onTap();
       },
-      onTapCancel: () {
-        isPressed.value = false;
-      },
+      onTapCancel: () => isPressed.value = false,
       child: ValueListenableBuilder<bool>(
         valueListenable: isPressed,
         builder: (context, pressed, child) {
@@ -163,95 +173,84 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  // 구글 로그인 함수
-  Future<void> _signInWithGoogle(BuildContext context) async {
+  // 로그인 처리 함수 (구글 또는 카카오)
+  Future<void> _signInWith(BuildContext context, String provider) async {
     try {
-      // AuthService를 사용하여 Google 로그인 및 Firebase 인증 처리
-      final user = await AuthService.signInWithGoogle();
+      late dynamic user;
+
+      if (provider == 'google') {
+        user = await AuthService.signInWithGoogle();
+      } else if (provider == 'kakao') {
+        user = await _signInWithKakao();
+      }
 
       if (user != null) {
-        // Firestore에서 해당 사용자 UID로 저장된 데이터 확인
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+        await _handleUserData(user, context);
+      } else {
+        throw Exception("사용자 정보를 가져올 수 없습니다.");
+      }
+    } catch (e) {
+      print('$provider 로그인 실패: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$provider 로그인 실패: $e')),
+      );
+    }
+  }
 
-        if (doc.exists) {
-          // Firestore 데이터 가져오기
-          final data = doc.data();
-          if (data != null) {
-            // UserModel 생성
-            final userModel = UserModel(
-              id: user.uid,
-              email: user.email ?? '',
-              name: user.displayName ?? '',
-              photoUrl: user.photoURL,
-              age: data['age'] ?? '',
-              height: data['height'] ?? '',
-              weight: data['weight'] ?? '',
-              gender: data['gender'] ?? '',
-            );
+  // 카카오 로그인 처리
+  Future<dynamic> _signInWithKakao() async {
+    bool isInstalled = await isKakaoTalkInstalled();
+    OAuthToken token;
+    token = isInstalled
+        ? await UserApi.instance.loginWithKakaoTalk()
+        : await UserApi.instance.loginWithKakaoAccount();
 
-            // age, height, weight 중 하나라도 비어 있으면 UserInfoScreen으로 이동
-            if (userModel.age == null || userModel.height == null || userModel.weight == null) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserInfoScreen(user: user),
-                ),
-              );
-            } else {
-              // 모든 값이 존재하면 HomeScreen으로 이동
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ),
-              );
-            }
-          }
-        } else {
-          // Firestore에 사용자 정보가 없는 경우 UserInfoScreen으로 이동
+    print('카카오 로그인 성공: ${token.accessToken}');
+    // 토큰을 기반으로 Firebase 연동 가능
+    return token;
+  }
+
+  // 사용자 정보 처리 및 화면 이동
+  Future<void> _handleUserData(dynamic user, BuildContext context) async {
+    final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+    if (doc.exists) {
+      final data = doc.data();
+      if (data != null) {
+        final userModel = UserModel(
+          id: user.uid,
+          email: user.email ?? '',
+          name: user.displayName ?? '',
+          photoUrl: user.photoURL,
+          age: data['age'] ?? '',
+          height: data['height'] ?? '',
+          weight: data['weight'] ?? '',
+          gender: data['gender'] ?? '',
+        );
+
+        if (userModel.age == null || userModel.height == null || userModel.weight == null) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => UserInfoScreen(user: user),
             ),
           );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
         }
-      } else {
-        throw Exception("사용자 정보를 가져올 수 없습니다.");
       }
-    } catch (e) {
-      print('구글 로그인 실패: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('구글 로그인 실패: $e')),
-      );
-    }
-  }
-
-
-// 카카오 로그인 함수
-  Future<void> _signInWithKakao(BuildContext context) async {
-    try {
-      bool isInstalled = await isKakaoTalkInstalled();
-      OAuthToken token;
-
-      // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 그렇지 않으면 카카오 계정으로 로그인
-      token = isInstalled
-          ? await UserApi.instance.loginWithKakaoTalk()
-          : await UserApi.instance.loginWithKakaoAccount();
-
-      print('카카오 로그인 성공: ${token.accessToken}');
-      // Firebase 연동 또는 사용자 데이터 처리
-
-      // 로그인 성공 후 홈 화면으로 이동
+    } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>   HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => UserInfoScreen(user: user),
+        ),
       );
-    } catch (e) {
-      print('카카오 로그인 실패: $e');
     }
   }
 }
