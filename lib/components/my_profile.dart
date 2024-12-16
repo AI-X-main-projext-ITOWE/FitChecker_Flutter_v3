@@ -1,4 +1,5 @@
 import 'package:fitchecker/components/edit_profile.dart';
+import 'package:fitchecker/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -103,13 +104,11 @@ class _MyProfileState extends State<MyProfile> {
     List<Map<String, dynamic>> exercises = _exerciseData[formattedDate] ?? [];
 
     if (exercises.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("운동 기록이 없습니다.")),
-      );
+      _showTopMessage("운동 기록이 없습니다.");
       return;
     }
 
-    // 팝업에 운동 기록 표시
+    // 나머지 코드는 그대로 유지
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -147,13 +146,13 @@ class _MyProfileState extends State<MyProfile> {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min, // 높이를 내용에 맞게 자동 조정
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // 소모 칼로리 창 (X 버튼 포함)
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                     decoration: BoxDecoration(
-                      color: Color(0xFF6C2FF2), // 보라색 배경
+                      color: Color(0xFF6C2FF2),
                       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     child: Row(
@@ -169,11 +168,11 @@ class _MyProfileState extends State<MyProfile> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context); // 팝업 닫기
+                            Navigator.pop(context);
                           },
                           child: Icon(
-                            Icons.close, // X 아이콘
-                            color: Colors.white, // 흰색
+                            Icons.close,
+                            color: Colors.white,
                             size: 24,
                           ),
                         ),
@@ -181,13 +180,11 @@ class _MyProfileState extends State<MyProfile> {
                     ),
                   ),
                   ListView.builder(
-                    shrinkWrap: true, // 높이를 데이터 크기에 맞게 설정
-                    physics: NeverScrollableScrollPhysics(), // 내부 스크롤 비활성화
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                     itemCount: exercises.length,
                     itemBuilder: (context, index) {
                       final exercise = exercises[index];
-
-                      // 운동 이름 번역
                       String translatedName = '';
                       switch (exercise['exerciseName']) {
                         case 'push-up':
@@ -204,7 +201,6 @@ class _MyProfileState extends State<MyProfile> {
                           break;
                       }
 
-                      // 초를 분과 초로 변환
                       int timeInSeconds = int.tryParse(exercise['exerciseTime']) ?? 0;
                       int minutes = (timeInSeconds / 60).floor();
                       int seconds = timeInSeconds % 60;
@@ -219,7 +215,7 @@ class _MyProfileState extends State<MyProfile> {
                         child: Container(
                           padding: const EdgeInsets.all(15),
                           decoration: BoxDecoration(
-                            color: Color(0xFFF5F5F5), // 연한 흰색 배경
+                            color: Color(0xFFF5F5F5),
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
@@ -236,16 +232,16 @@ class _MyProfileState extends State<MyProfile> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    translatedName, // 운동 이름
+                                    translatedName,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF6C2FF2), // 보라색 텍스트
+                                      color: Color(0xFF6C2FF2),
                                     ),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    timeDisplay, // 운동 시간
+                                    timeDisplay,
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.black,
@@ -254,7 +250,7 @@ class _MyProfileState extends State<MyProfile> {
                                 ],
                               ),
                               Text(
-                                "${exercise['totalCounter']} 회", // 총 횟수
+                                "${exercise['totalCounter']} 회",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -276,9 +272,58 @@ class _MyProfileState extends State<MyProfile> {
     );
   }
 
+// 상단바 메시지 표시
+  void _showTopMessage(String message) {
+    OverlayState overlayState = Overlay.of(context)!;
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              message,
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlayState.insert(overlayEntry);
+
+    Future.delayed(Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF6C2FF2), // 헤더 배경색 보라색
+        elevation: 0, // 그림자 제거
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // 뒤로가기 버튼
+          onPressed: () {
+            Navigator.of(context).pop(); // 이전 화면으로 이동
+          },
+        ),
+        title: Text(
+          '내 정보', // 헤더 제목
+          style: TextStyle(
+            color: Colors.white, // 텍스트 색상 흰색
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true, // 제목을 가운데 정렬
+      ),
       backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
         child: Column(
@@ -340,7 +385,7 @@ class _MyProfileState extends State<MyProfile> {
                         foregroundColor: Colors.white, // 흰색 글자
                         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12), // 버튼 패딩
                         textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        minimumSize: Size(double.infinity, 50),// 텍스트 스타일
+                        minimumSize: Size(double.infinity, 50), // 텍스트 스타일
                       ),
                     ),
                   ],
@@ -419,6 +464,40 @@ class _MyProfileState extends State<MyProfile> {
               ),
             ),
             SizedBox(height: 16),
+            // 구분선 추가
+            Divider(thickness: 2.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => SettingsScreen(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0); // 아래에서 올라오는 애니메이션
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
+
+                        final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        final offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                icon: Icon(Icons.settings, color: Colors.white),
+                label: Text("설정", style: TextStyle(fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF6C2FF2),
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50),
+                ),
+              ),
+            ),
           ],
         ),
       ),

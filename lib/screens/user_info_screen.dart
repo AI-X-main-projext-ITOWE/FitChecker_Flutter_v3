@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fitchecker/models/user_model.dart';
-import 'package:fitchecker/services/auth_service.dart';
 import 'home_screen.dart';
 
 class UserInfoScreen extends StatefulWidget {
@@ -29,6 +28,35 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     });
   }
 
+  void _showTopMessage(String message) {
+    OverlayState overlayState = Overlay.of(context)!;
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              message,
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlayState.insert(overlayEntry);
+
+    Future.delayed(Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -45,7 +73,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
           decoration: BoxDecoration(
             color: Colors.white, // 원하는 배경색 설정
             borderRadius: BorderRadius.circular(12), // 선택적으로 둥근 테두리 추가
-            boxShadow: [ // 선택적으로 그림자 추가
+            boxShadow: [
+              // 선택적으로 그림자 추가
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 5,
@@ -87,8 +116,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   child: TextField(
                     controller: ageController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder()),
+                    decoration: const InputDecoration(border: OutlineInputBorder()),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -98,8 +126,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   child: TextField(
                     controller: heightController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(hintText: "(cm)",
-                        border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                        hintText: "(cm)", border: OutlineInputBorder()),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -109,8 +137,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   child: TextField(
                     controller: weightController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(hintText: "(kg)",
-                        border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                        hintText: "(kg)", border: OutlineInputBorder()),
                   ),
                 ),
                 SizedBox(height: 20), // 입력 필드와 버튼 간의 간격
@@ -153,14 +181,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                             ),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('모든 정보를 입력해주세요.')),
-                          );
+                          _showTopMessage('모든 정보를 입력해주세요.');
                         }
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('오류 발생: $e')),
-                        );
+                        _showTopMessage('오류 발생: $e');
                       }
                     },
                     child: const Text('회원가입'),

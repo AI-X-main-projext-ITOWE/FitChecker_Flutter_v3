@@ -87,13 +87,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() {
                         _isNotificationOn = value; // 상태 업데이트
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(value
-                              ? "알림이 켜졌습니다."
-                              : "알림이 꺼졌습니다."),
-                        ),
-                      );
                     },
                   ),
                 ),

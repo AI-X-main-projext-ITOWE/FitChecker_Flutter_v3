@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fitchecker/components/chatbot.dart';
 
 class Footer extends StatelessWidget {
   final double height;
@@ -34,11 +35,31 @@ class Footer extends StatelessWidget {
           // 내 정보 버튼
           IconButton(
             icon: Icon(
-              Icons.person,
+              Icons.chat_outlined,
               size: 36,
               color: currentIndex == 1 ? Color(0xFF6C2FF2) : Colors.grey,
             ),
-            onPressed: () => onTabSelected(1),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 300), // 전환 애니메이션 시간
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        Chatbot(initialMessage: ''),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      // 오른쪽에서 슬라이드 전환
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: Offset(1.0, 0.0), // 오른쪽에서 시작
+                          end: Offset.zero, // 화면의 원래 위치
+                        ).animate(animation),
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
           ),
         ],
       ),

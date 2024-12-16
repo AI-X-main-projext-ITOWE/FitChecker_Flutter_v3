@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,7 @@ class _ChatbotState extends State<Chatbot> {
   final ScrollController _scrollController = ScrollController(); // 스크롤 컨트롤러 추가
   bool _isWaitingForResponse = false;
   String _userId = "";
+  String _fcmToken = "";
   int _userAge = 0;
   double _userHeight = 0;
   double _userWeight = 0;
@@ -36,6 +38,7 @@ class _ChatbotState extends State<Chatbot> {
 
   Future<void> _fetchUserId() async {
     final user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
       try {
         final snapshot = await FirebaseFirestore.instance
@@ -43,8 +46,11 @@ class _ChatbotState extends State<Chatbot> {
             .doc(user.uid)
             .get();
 
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
+
         if (snapshot.exists) {
           _userId = user.uid;
+          _fcmToken = fcmToken!;
           _userAge = int.parse(snapshot['age']);
           _userHeight = double.parse(snapshot['height']);
           _userWeight = double.parse(snapshot['weight']);
@@ -71,7 +77,7 @@ class _ChatbotState extends State<Chatbot> {
 
     _scrollToBottom(); // 메시지 추가 후 스크롤 이동
 
-    final url = Uri.parse('http://10.0.2.2:8000/api/v1/agent');
+    final url = Uri.parse('http://13.125.209.107:80/api/v1/agent');
 
     try {
       final response = await http.post(
@@ -80,6 +86,7 @@ class _ChatbotState extends State<Chatbot> {
         body: json.encode({
           "request": {
             "user_id": _userId,
+            "fcm_token": _fcmToken,
             "age": _userAge,
             "height": _userHeight,
             "weight": _userWeight,

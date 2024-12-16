@@ -111,8 +111,10 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
       return Center(child: CircularProgressIndicator());
     }
 
-    double screenWidth = MediaQuery.of(context).size.width;
-    double chartSize = screenWidth * 0.9;
+    // 작은 그래프 크기를 기준으로 설정
+    double smallGraphWidth = MediaQuery.of(context).size.width * 0.4;
+    double gapBetweenSmallGraphs = 16.0; // 두 작은 그래프 사이의 간격
+    double chartSize = (smallGraphWidth * 2) + gapBetweenSmallGraphs; // 큰 그래프 너비 계산
 
     int maxCounter = counterSumByExercise.values.isNotEmpty
         ? counterSumByExercise.values.reduce((a, b) => a > b ? a : b)
@@ -124,16 +126,41 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
     // 일주일간 총 운동 시간
     int totalTime = timeSumByExercise.values.fold(0, (sum, time) => sum + time);
 
+    // 데이터가 없을 경우
+    bool noData = counterSumByExercise.isEmpty;
+
     return Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center, // 여기 수정
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            "● 운동 기록 (지난 7일)",
-            style: TextStyle(fontSize: 16, color: Colors.black),
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+              maxHeight: MediaQuery.of(context).size.height * 0.05,
+            ),
+            decoration: BoxDecoration(
+              color: Color(0xFF6C2FF2), // 박스 배경색 (보라색)
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center, // 텍스트 중앙 정렬
+            child: Text(
+              "운동 기록 (지난 7일)",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white, // 텍스트 색상 흰색
+                fontWeight: FontWeight.bold, // 텍스트 굵게
+              ),
+            ),
           ),
           SizedBox(height: 8),
-          // 기존 그래프를 중앙 정렬
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0), // 양쪽에 패딩 추가
+            child: ExerciseSummary(
+              totalTime: noData ? 0 : totalTime,
+              exerciseCounts: noData ? {} : counterSumByExercise,
+            ),
+          ),
+          SizedBox(height: 8),
           Center(
             child: Stack(
               alignment: Alignment.center,
@@ -143,15 +170,17 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
                   clipBehavior: Clip.antiAlias,
                   child: Container(
                     padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
-                    width: chartSize,
-                    height: chartSize,
+                    width: chartSize, // 기존 차트 크기 유지
+                    height: chartSize * 0.8,
                     color: Colors.grey[900],
                     child: BarChart(
                       BarChartData(
                         backgroundColor: Colors.transparent,
                         minY: 0,
                         maxY: adjustedMaxY,
-                        barGroups: _generateBarGroups(),
+                        barGroups: noData
+                            ? [] // 데이터가 없을 경우 막대그래프 비우기
+                            : _generateBarGroups(),
                         titlesData: FlTitlesData(
                           leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                           bottomTitles: AxisTitles(
@@ -183,7 +212,7 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
                         gridData: FlGridData(
                           show: true,
                           drawHorizontalLine: true,
-                          horizontalInterval: adjustedMaxY / 5,
+                          horizontalInterval: adjustedMaxY == 0 ? 1.0 : adjustedMaxY / 5, // 여기 수정
                           getDrawingHorizontalLine: (value) {
                             return FlLine(
                               color: Colors.white12,
@@ -225,21 +254,30 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
                     ),
                   ),
                 ),
+                // 중앙에 텍스트 추가
+                if (noData)
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "지난 7일 간의 운동기록이 존재하지 않습니다.",
+                        style: TextStyle(
+                          color: Colors.yellowAccent,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
               ],
             ),
-          ),
-          SizedBox(height: 16),
-          // 추가된 부분
-          ExerciseSummary(
-            totalTime: totalTime,
-            exerciseCounts: counterSumByExercise,
           ),
           SizedBox(height: 16),
         ],
       ),
     );
   }
-
 
   List<BarChartGroupData> _generateBarGroups() {
     final keys = counterSumByExercise.keys.toList();
@@ -300,7 +338,7 @@ class ExerciseSummary extends StatelessWidget {
         // 총 운동 시간 컨테이너
         Container(
           width: MediaQuery.of(context).size.width * 0.4,
-          height: MediaQuery.of(context).size.width * 0.4,
+          height: MediaQuery.of(context).size.height * 0.15,
           decoration: BoxDecoration(
             color: Color(0xFF212121),
             borderRadius: BorderRadius.circular(16),
@@ -310,7 +348,7 @@ class ExerciseSummary extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "총 운동 시간",
+                  "운동 시간",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -334,7 +372,7 @@ class ExerciseSummary extends StatelessWidget {
         // 소모 칼로리 컨테이너
         Container(
           width: MediaQuery.of(context).size.width * 0.4,
-          height: MediaQuery.of(context).size.width * 0.4,
+          height: MediaQuery.of(context).size.height * 0.15,
           decoration: BoxDecoration(
             color: Color(0xFF212121),
             borderRadius: BorderRadius.circular(16),

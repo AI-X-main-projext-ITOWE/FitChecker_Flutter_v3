@@ -1,7 +1,7 @@
 import 'package:fitchecker/components/bouncyText.dart';
+import 'package:fitchecker/components/my_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:fitchecker/screens/notifications_screen.dart';
-import 'package:fitchecker/screens/settings_screen.dart';
 
 class Header extends StatelessWidget {
   final double height;
@@ -44,7 +44,7 @@ class Header extends StatelessWidget {
         }, icon: Icon(Icons.notifications, color: Colors.white,)),
         IconButton(onPressed: (){
           Navigator.of(context).push(
-            PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) => SettingsScreen(),
+            PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) => MyProfile(),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 // 애니메이션 설정: 슬라이드 애니메이션
                 const begin = Offset(1.0, 0.0); // 오른쪽에서 왼쪽으로
@@ -58,7 +58,7 @@ class Header extends StatelessWidget {
               },
             ),
           );
-        }, icon: Icon(Icons.settings, color: Colors.white,))
+        }, icon: Icon(Icons.person, color: Colors.white,))
       ],
     );
   }

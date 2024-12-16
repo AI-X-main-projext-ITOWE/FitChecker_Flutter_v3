@@ -252,6 +252,25 @@ class _ChoiceExerciseState extends State<ChoiceExercise> {
     final screenHeight = MediaQuery.of(context).size.height * (1 - 0.32);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF6C2FF2), // 헤더 배경색 보라색
+        elevation: 0, // 그림자 제거
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // 뒤로가기 버튼
+          onPressed: () {
+            Navigator.of(context).pop(); // 이전 화면으로 이동
+          },
+        ),
+        title: Text(
+          'AI와 함께 운동하기', // 헤더 제목
+          style: TextStyle(
+            color: Colors.white, // 텍스트 색상 흰색
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true, // 제목을 가운데 정렬
+      ),
       backgroundColor: Colors.grey[200], // 배경색 설정
       body: Center(
         child: Padding(
