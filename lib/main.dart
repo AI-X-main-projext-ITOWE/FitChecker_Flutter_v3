@@ -4,10 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'components/fcm_notificationService.dart';
 import 'components/notification_helper.dart';  // Provider import
+import 'firebase_options.dart'; // FlutterFire CLI가 생성한 파일
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,8 @@ void main() async {
   KakaoSdk.init(nativeAppKey: appkey);
 
   // Firebase 초기화
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,);
 
   // FCM 설정
   String? fcmToken = await FirebaseMessaging.instance.getToken();

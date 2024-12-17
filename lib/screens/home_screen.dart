@@ -8,58 +8,35 @@ import 'package:flutter/services.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomeScreen extends StatefulWidget {
-
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<HomeScreen> {
+class HomeScreen extends StatelessWidget {
   static const navigationMethodChannel = MethodChannel(
       'com.example.fitchecker/navigation');
 
   // 헤더, 풋터 Height 비율 0.1 = 디바이스의 10%
   final double headerAndFooterHeight = 0.1;
 
-  // 현재 선택된 화면 인덱스
-  int _currentIndex = 0;
+  final PageController _pageController = PageController(initialPage: 0);
+  final int _currentIndex = 0;
 
-  late PageController _pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(initialPage: _currentIndex);
-
+  HomeScreen() {
     // 네이티브에서 화면 전환 요청 처리
     navigationMethodChannel.setMethodCallHandler((call) async {
       if (call.method == 'navigateTo') {
         final destination = call.arguments['destination'];
         if (destination == 'home') {
-          // MainPage로 이동
-          setState(() async {
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(),)
-            );
-          });
+          await Navigator.push(
+            GlobalNavigator.navigatorKey.currentContext!,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
         }
       }
     });
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
   Widget _buildSwiper(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        double screenWidth = MediaQuery
-            .of(context)
-            .size
-            .width; // 화면 너비
-
+        double screenWidth = MediaQuery.of(context).size.width; // 화면 너비
 
         return ClipRRect(
           borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정
@@ -93,7 +70,6 @@ class _MainScreenState extends State<HomeScreen> {
                 );
               },
               itemCount: 3,
-              // 슬라이드 갯수
               autoplay: true,
             ),
           ),
@@ -107,9 +83,7 @@ class _MainScreenState extends State<HomeScreen> {
       final Uri uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
-        print('URL launched successfully: $url');
       } else {
-        print('Cannot launch URL: $url');
         throw 'Could not launch $url';
       }
     } catch (e) {
@@ -118,11 +92,9 @@ class _MainScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context)  {
-    final double dynamicHeight = MediaQuery
-        .of(context)
-        .size
-        .height * headerAndFooterHeight;
+  Widget build(BuildContext context) {
+    final double dynamicHeight =
+        MediaQuery.of(context).size.height * headerAndFooterHeight;
 
     return Stack(
       children: [
@@ -170,11 +142,6 @@ class _MainScreenState extends State<HomeScreen> {
                   Expanded(
                     child: PageView(
                       controller: _pageController,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
-                      },
                       children: [
                         MainPage(),
                       ],
@@ -188,9 +155,6 @@ class _MainScreenState extends State<HomeScreen> {
             height: dynamicHeight,
             currentIndex: _currentIndex,
             onTabSelected: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
               _pageController.animateToPage(
                 index,
                 duration: Duration(milliseconds: 300),
@@ -212,13 +176,13 @@ class _MainScreenState extends State<HomeScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFF6C2FF2), // 보라색 (밝은 톤)
-                  Color(0xFF6C2FF2), // 동일한 보라색 (그라데이션 느낌 유지)
+                  Color(0xFF6C2FF2),
+                  Color(0xFF6C2FF2),
                 ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF5522B5).withOpacity(0.5), // 어두운 보라 그림자
+                  color: Color(0xFF5522B5).withOpacity(0.5),
                   offset: Offset(2, 4),
                   blurRadius: 8,
                 ),
@@ -230,17 +194,13 @@ class _MainScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(builder: (context) => ChoiceExercise()),
                 );
-                setState(() {
-                  _currentIndex = 0; // 필요한 초기화 로직
-                  _pageController.jumpToPage(_currentIndex); // PageView 갱신
-                });
               },
-              elevation: 0, // 기본 그림자 제거
-              backgroundColor: Colors.transparent, // 백그라운드 투명
+              elevation: 0,
+              backgroundColor: Colors.transparent,
               child: Icon(
                 Icons.fitness_center,
                 size: 36,
-                color: Colors.white, // 아이콘 흰색
+                color: Colors.white,
               ),
             ),
           ),
@@ -248,4 +208,9 @@ class _MainScreenState extends State<HomeScreen> {
       ],
     );
   }
+}
+
+class GlobalNavigator {
+  static final GlobalKey<NavigatorState> navigatorKey =
+  GlobalKey<NavigatorState>();
 }

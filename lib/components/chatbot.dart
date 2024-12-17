@@ -6,8 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-
-import '../screens/home_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'camera.dart';
 
 class Chatbot extends StatefulWidget {
@@ -20,6 +19,8 @@ class Chatbot extends StatefulWidget {
 }
 
 class _ChatbotState extends State<Chatbot> {
+  static const platform = MethodChannel('com.example.fitchecker/exercise');
+
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
   final ScrollController _scrollController = ScrollController(); // 스크롤 컨트롤러 추가
@@ -30,8 +31,9 @@ class _ChatbotState extends State<Chatbot> {
   double _userHeight = 0;
   double _userWeight = 0;
   String _userGender = "";
+  final String apiUrl = dotenv.env['API_BASE_URL'] ?? "http://default";
 
-  static const platform = MethodChannel('com.example.fitchecker/exercise');
+
 
   @override
   void initState() {
@@ -83,7 +85,7 @@ class _ChatbotState extends State<Chatbot> {
 
     _scrollToBottom(); // 메시지 추가 후 스크롤 이동
 
-    final url = Uri.parse('http://13.125.209.107:80/api/v1/agent');
+    final url = Uri.parse('${apiUrl}/api/v1/agent');
 
     try {
       final response = await http.post(
