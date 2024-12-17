@@ -31,7 +31,7 @@ class _ChatbotState extends State<Chatbot> {
   double _userHeight = 0;
   double _userWeight = 0;
   String _userGender = "";
-  final String apiUrl = dotenv.env['API_BASE_URL'] ?? "http://default";
+  final String apiUrl = dotenv.env['API_BASE_URL'] ?? "http://default.com/";
 
 
 
