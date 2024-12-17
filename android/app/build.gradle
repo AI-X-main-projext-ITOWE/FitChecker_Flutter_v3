@@ -28,6 +28,15 @@ android {
         baseline file("lint-baseline.xml")
     }
 
+    // .env 파일 경로 설정
+    def dotenv = new Properties()
+    def envFile = file("${rootProject.projectDir}/../assets/config/.env")
+    if (envFile.exists()) {
+        envFile.withInputStream { stream -> dotenv.load(stream) }
+    } else {
+        throw new FileNotFoundException("Could not find .env file at: ${envFile.path}")
+    }
+
     defaultConfig {
         applicationId "com.example.fitchecker"
         minSdkVersion 24
@@ -37,9 +46,12 @@ android {
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' // 필요한 ABI 추가
         }
-        manifestPlaceholders = [
-                kakaoScheme: "kakao${KAKAO_APP_KEY}"
-        ]
+        // manifestPlaceholders 추가 및 null 체크
+        def kakaoKey = dotenv['KAKAO_APP_KEY']
+        if (kakaoKey == null) {
+            throw new GradleException("KAKAO_NATIVE_APP_KEY not found in .env file")
+        }
+        manifestPlaceholders = [KAKAO_APP_KEY: kakaoKey]
     }
 
     buildTypes {
