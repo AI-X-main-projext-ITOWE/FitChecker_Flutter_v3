@@ -215,10 +215,11 @@ class LoginScreen extends StatelessWidget {
       // Firestore에서 사용자 정보 가져오기
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
-
       if (doc.exists) {
+        // Firestore 데이터 가져오기
         final data = doc.data();
         if (data != null) {
+          // UserModel 생성
           final userModel = UserModel(
             id: user.uid,
             email: user.email ?? '',
@@ -228,6 +229,7 @@ class LoginScreen extends StatelessWidget {
             height: data['height'] ?? '',
             weight: data['weight'] ?? '',
             gender: data['gender'] ?? '',
+            fcmToken: data['fcm_token']?? '',
           );
 
           // 정보가 부족하면 사용자 정보 입력 화면으로 이동
@@ -267,26 +269,25 @@ class LoginScreen extends StatelessWidget {
 
 
 // 카카오 로그인 함수
-  Future<void> _signInWithKakao(BuildContext context) async {
-    try {
-      bool isInstalled = await isKakaoTalkInstalled();
-      OAuthToken token;
+Future<void> _signInWithKakao(BuildContext context) async {
+  try {
+    bool isInstalled = await isKakaoTalkInstalled();
+    OAuthToken token;
 
-      // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 그렇지 않으면 카카오 계정으로 로그인
-      token = isInstalled
-          ? await UserApi.instance.loginWithKakaoTalk()
-          : await UserApi.instance.loginWithKakaoAccount();
+    // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 그렇지 않으면 카카오 계정으로 로그인
+    token = isInstalled
+        ? await UserApi.instance.loginWithKakaoTalk()
+        : await UserApi.instance.loginWithKakaoAccount();
 
-      print('카카오 로그인 성공: ${token.accessToken}');
-      // Firebase 연동 또는 사용자 데이터 처리
+    print('카카오 로그인 성공: ${token.accessToken}');
+    // Firebase 연동 또는 사용자 데이터 처리
 
-      // 로그인 성공 후 홈 화면으로 이동
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) =>   HomeScreen()),
-      );
-    } catch (e) {
-      print('카카오 로그인 실패: $e');
-    }
+    // 로그인 성공 후 홈 화면으로 이동
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) =>   HomeScreen()),
+    );
+  } catch (e) {
+    print('카카오 로그인 실패: $e');
   }
 }
