@@ -4,7 +4,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'components/fcm_notificationService.dart';
 import 'components/notification_helper.dart';  // Provider import
 
 void main() async {
@@ -23,6 +25,10 @@ void main() async {
   // FCM 설정
   String? fcmToken = await FirebaseMessaging.instance.getToken();
   print("FCM Token: $fcmToken");
+
+  // 알람 서비스 초기화
+  NotificationService notificationService = NotificationService();
+  await notificationService.initialize();
 
   runApp(
     MultiProvider(

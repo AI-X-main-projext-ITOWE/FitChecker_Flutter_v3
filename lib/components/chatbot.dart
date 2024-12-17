@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../screens/home_screen.dart';
 import 'camera.dart';
 
 class Chatbot extends StatefulWidget {
@@ -286,7 +287,7 @@ class _ChatbotState extends State<Chatbot> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white), // 뒤로가기 버튼
             onPressed: () {
-              Navigator.of(context).pop(); // 이전 화면으로 이동
+              Navigator.pop(context); // 이전 화면으로 이동
             },
           ),
           title: Text(

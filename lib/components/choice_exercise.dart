@@ -134,7 +134,7 @@ class _ChoiceExerciseState extends State<ChoiceExercise> {
                       ),
                       IconButton(
                         icon: Icon(Icons.close),
-                        onPressed: () async => await Navigator.push(context,MaterialPageRoute(builder: (context) => HomeScreen())), // 팝업 닫기
+                        onPressed: () => Navigator.pop(context), // 팝업 닫기
                       ),
                     ],
                   ),
