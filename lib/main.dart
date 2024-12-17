@@ -7,7 +7,6 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'components/fcm_notificationService.dart';
 import 'components/notification_helper.dart';  // Provider import
-import 'firebase_options.dart'; // FlutterFire CLI가 생성한 파일
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -84,8 +83,7 @@ void main() async {
   KakaoSdk.init(nativeAppKey: appkey);
 
   // Firebase 초기화
-  await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,);
+  await Firebase.initializeApp();
 
   // FCM 설정
   await setupNotificationChannel();
