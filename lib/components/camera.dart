@@ -1,4 +1,5 @@
 import 'package:fitchecker/main.dart';
+import 'package:fitchecker/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -29,14 +30,14 @@ class _CameraState extends State<Camera> {
     }
   }
 
-  void _navigateToMain() {
+  void _navigateToMain() async {
     if (Navigator.canPop(context)) {
       Navigator.pop(context); // 이전 화면으로 이동
     } else {
-      Navigator.pushReplacement(
+      await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => MyApp(), // 적절한 화면으로 이동 수정예정
+          builder: (context) => HomeScreen(), // 적절한 화면으로 이동 수정예정
         ),
       );
     }

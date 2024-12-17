@@ -42,6 +42,7 @@ dependencies:
   firebase_core: ^3.8.0
   firebase_auth: ^5.3.3
   cloud_firestore: ^5.4.0
+  cloud_functions: ^5.1.2
   firebase_storage: ^12.3.6
   flutter_svg: ^2.0.7
   kakao_flutter_sdk_user: ^1.9.6 # 카카오 로그인 API 패키지
@@ -55,15 +56,23 @@ dependencies:
   firebase_messaging: ^15.1.6
   kakao_flutter_sdk: ^1.9.6
 
-
+  permission_handler: ^11.3.1
   flutter_local_notifications: ^18.0.0
   path_provider: ^2.1.4 #캐시 삭제에 필요
   provider: ^6.1.2
 
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.1
+
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png" # 앱 아이콘 파일 경로
+  min_sdk_android: 21 # 최소 SDK 버전
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -135,6 +144,7 @@ flutter:
     - assets/images/exersice.png
     - assets/images/my.png
     - assets/config/.env
+    - assets/icon/app_icon.png
 
   fonts:
     - family: happyzcool

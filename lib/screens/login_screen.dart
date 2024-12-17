@@ -215,6 +215,7 @@ class LoginScreen extends StatelessWidget {
       // Firestore에서 사용자 정보 가져오기
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
+
       if (doc.exists) {
         final data = doc.data();
         if (data != null) {
@@ -260,6 +261,32 @@ class LoginScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('사용자 정보 처리 실패: $e')),
       );
+    }
+  }
+}
+
+
+// 카카오 로그인 함수
+  Future<void> _signInWithKakao(BuildContext context) async {
+    try {
+      bool isInstalled = await isKakaoTalkInstalled();
+      OAuthToken token;
+
+      // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 그렇지 않으면 카카오 계정으로 로그인
+      token = isInstalled
+          ? await UserApi.instance.loginWithKakaoTalk()
+          : await UserApi.instance.loginWithKakaoAccount();
+
+      print('카카오 로그인 성공: ${token.accessToken}');
+      // Firebase 연동 또는 사용자 데이터 처리
+
+      // 로그인 성공 후 홈 화면으로 이동
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) =>   HomeScreen()),
+      );
+    } catch (e) {
+      print('카카오 로그인 실패: $e');
     }
   }
 }

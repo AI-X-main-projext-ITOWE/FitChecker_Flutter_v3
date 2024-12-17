@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'camera.dart';
 
 class Chatbot extends StatefulWidget {
   final String initialMessage;
@@ -16,6 +19,8 @@ class Chatbot extends StatefulWidget {
 }
 
 class _ChatbotState extends State<Chatbot> {
+  static const platform = MethodChannel('com.example.fitchecker/exercise');
+
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
   final ScrollController _scrollController = ScrollController(); // 스크롤 컨트롤러 추가
@@ -26,6 +31,9 @@ class _ChatbotState extends State<Chatbot> {
   double _userHeight = 0;
   double _userWeight = 0;
   String _userGender = "";
+  final String apiUrl = dotenv.env['API_BASE_URL'] ?? "http://default.com/";
+
+
 
   @override
   void initState() {
@@ -77,7 +85,7 @@ class _ChatbotState extends State<Chatbot> {
 
     _scrollToBottom(); // 메시지 추가 후 스크롤 이동
 
-    final url = Uri.parse('http://13.125.209.107:80/api/v1/agent');
+    final url = Uri.parse('${apiUrl}/api/v1/agent');
 
     try {
       final response = await http.post(
@@ -101,11 +109,26 @@ class _ChatbotState extends State<Chatbot> {
         final responseData = json.decode(utf8.decode(response.bodyBytes));
 
         if(responseData['response']?['counter_response'] != null){
-          final counterResponse = responseData['response']?['counter_response']?['response'] ?? "응답을 처리할 수 없습니다.";
+          // counter_response를 Map<String, dynamic>으로 타입 변환
+          final counterResponse = responseData['response']?['counter_response'] as Map<String, dynamic>;
 
+          // 각 필드를 안전하게 파싱
+          final exercise = counterResponse['exercise']?.toString() ?? "unknown"; // 운동 이름
+          final sets = counterResponse['exercise_set'] is int
+              ? counterResponse['exercise_set'] as int
+              : int.tryParse(counterResponse['exercise_set']?.toString() ?? "1") ?? 1;
+          final reps = counterResponse['exercise_counter'] is int
+              ? counterResponse['exercise_counter'] as int
+              : int.tryParse(counterResponse['exercise_counter']?.toString() ?? "1") ?? 1;
+          final responseText = counterResponse['response']?.toString() ?? "응답을 처리할 수 없습니다.";
+
+          // 네이티브로 데이터 전달 후 카메라 실행
+          await _startNativeCamera(exercise, sets, reps);
+
+          // UI 업데이트
           setState(() {
-            _messages.removeLast();
-            _messages.add({"sender": "bot", "text": counterResponse});
+            _messages.removeLast(); // "AI 트레이너가 답변을 생성 중입니다." 메시지 삭제
+            _messages.add({"sender": "bot", "text": responseText});
           });
         }
 
@@ -148,6 +171,96 @@ class _ChatbotState extends State<Chatbot> {
     }
   }
 
+  Future<void> _startNativeCamera(String exercise, int sets, int reps) async {
+    try {
+      await platform.invokeMethod('setExercise', {
+        "exercise": exercise,
+        "sets": sets,
+        "reps": reps,
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Camera(),
+        ),
+      );
+    } on PlatformException catch (e) {
+      print("Failed to start camera: ${e.message}");
+    } finally {
+      listenToNative();
+    }
+  }
+
+  static void listenToNative() {
+
+    platform.setMethodCallHandler((call) async {
+      if (call.method == 'sendExerciseInfo') {
+        Map<String, dynamic> data = Map<String, dynamic>.from(call.arguments);
+        String exercise = data['exercise'];
+        int totalCounter = data['totalCounter'];
+        int exerciseTime = data['exerciseTime'];
+        String exerciseDay = data['exerciseDay'];
+
+        print('Exercise: $exercise');
+        print('Total Counter: $totalCounter');
+        print('Exercise Time: $exerciseTime');
+        print('Exercise Day: $exerciseDay');
+        // 데이터를 UI에 반영하거나 처리
+
+        final user = FirebaseAuth.instance.currentUser;
+
+        if (user != null) {
+          final uid = user.uid; // 사용자 UID
+
+          // 날짜와 시간 분리
+          final dateParts = exerciseDay.split(' '); // "2024-12-6 12:4:32"
+          final date = dateParts[0]; // "2024-12-6" (날짜 부분)
+          final time = dateParts[1]; // "12:4:32" (시간 부분)
+
+          // 날짜를 "YYYY-MM-DD" 형식으로 포맷
+          final formattedDateParts = date.split('-');
+          final formattedDate = "${formattedDateParts[0]}-${formattedDateParts[1].padLeft(2, '0')}-${formattedDateParts[2].padLeft(2, '0')}";
+
+          // Firestore 경로 설정
+          final dayDocRef = FirebaseFirestore.instance
+              .collection('users')
+              .doc(uid)
+              .collection('exercise_days')
+              .doc("exercise_${formattedDate}_${exercise}");
+
+          // final exerciseDocRef = dayDocRef.collection('exercise_types').doc("exercise_${exercise}");
+
+          await FirebaseFirestore.instance.runTransaction((transaction) async {
+            // 운동 날짜 문서 업데이트
+            final daySnapshot = await transaction.get(dayDocRef);
+            if (daySnapshot.exists) {
+              final existingData = daySnapshot.data()!;
+              final updatedTotalCounter =
+              (int.parse(existingData['totalCounter'] ?? '0') + totalCounter).toString();
+              final updatedExerciseTime =
+              (int.parse(existingData['exerciseTime'] ?? '0') + exerciseTime).toString();
+
+              transaction.update(dayDocRef, {
+                'totalCounter': updatedTotalCounter,
+                'exerciseTime': updatedExerciseTime,
+              });
+            } else {
+              transaction.set(dayDocRef, {
+                'totalCounter': totalCounter.toString(),
+                'exerciseTime': exerciseTime.toString(),
+                'exerciseDate': formattedDate.toString(),
+                'exerciseName': exercise.toString()
+              });
+            }
+          });
+        } else {
+          print('사용자가 로그인하지 않았습니다.');
+        }
+      }
+    });
+  }
+
   // 스크롤을 최하단으로 이동시키는 함수
   void _scrollToBottom() {
     Future.delayed(Duration(milliseconds: 100), () {
@@ -176,7 +289,7 @@ class _ChatbotState extends State<Chatbot> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white), // 뒤로가기 버튼
             onPressed: () {
-              Navigator.of(context).pop(); // 이전 화면으로 이동
+              Navigator.pop(context); // 이전 화면으로 이동
             },
           ),
           title: Text(

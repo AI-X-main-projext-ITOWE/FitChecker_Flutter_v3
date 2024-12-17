@@ -69,6 +69,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               height: data['height'] ?? '',
               weight: data['weight'] ?? '',
               gender: data['gender'] ?? '',
+              fcmToken: data['fcm_token'] ?? '',
             );
 
             // age, height, weight 중 하나라도 비어 있으면 UserInfoScreen으로 이동
@@ -94,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => LoginScreen(),
+              builder: (context) => UserInfoScreen(user: user),
             ),
           );
         }
