@@ -11,6 +11,7 @@ class UserModel {
   final String height;
   final String weight;
   final String gender;
+  final String fcmToken;
 
   UserModel({
     required this.id,
@@ -20,6 +21,7 @@ class UserModel {
     required this.height,
     required this.weight,
     required this.gender,
+    required this.fcmToken,
     this.photoUrl, // nullable로 설정
   });
 
@@ -33,12 +35,14 @@ class UserModel {
       height: user.height ??'',
       weight: user.weight ??'',
       gender: user.gender ??'',
+      fcmToken: user.fcmToken ??'',
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'fcm_token': fcmToken,
       'email': email,
       'name': name,
       'photoUrl': photoUrl, // photoUrl을 추가
@@ -58,4 +62,6 @@ extension on User {
   get weight => null;
 
   get gender => null;
+
+  get fcmToken => null;
 }

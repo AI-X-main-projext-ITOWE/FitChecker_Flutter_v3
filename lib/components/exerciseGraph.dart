@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class ExerciseGraph extends StatefulWidget {
+
   @override
   _ExerciseGraphState createState() => _ExerciseGraphState();
 }
@@ -144,7 +145,7 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
             ),
             alignment: Alignment.center, // 텍스트 중앙 정렬
             child: Text(
-              "운동 기록 (지난 7일)",
+              "● 운동 기록 (지난 7일)",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white, // 텍스트 색상 흰색
@@ -293,7 +294,7 @@ class _ExerciseGraphState extends State<ExerciseGraph> {
           barRods: [
             BarChartRodData(
               toY: count.toDouble(),
-              color: Colors.blueAccent,
+              color: Color(0xFF6C2FF2),
               width: 20, // 막대 너비 조정
               borderRadius: BorderRadius.vertical(top: Radius.circular(4)), // 막대 모서리 둥글게
             ),
