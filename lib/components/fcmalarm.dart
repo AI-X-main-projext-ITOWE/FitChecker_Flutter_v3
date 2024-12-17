@@ -64,7 +64,57 @@ class _AlarmListPageState extends State<AlarmListPage> {
     return Scaffold(
       appBar: AppBar(title: Text('AI Alarms')),
       body: _alarms.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? FutureBuilder(
+        future: _databaseReference.child('alarms').get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else
+          if (!snapshot.hasData || snapshot.data == null || _alarms.isEmpty) {
+            return Center(
+              child: Text(
+                '저장된 알람이 없습니다.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
+          } else {
+            return ListView.builder(
+              itemCount: _alarms.length,
+              itemBuilder: (context, index) {
+                final alarm = _alarms[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  elevation: 4,
+                  child: ListTile(
+                    leading: Icon(Icons.notifications, color: Colors.blue),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          alarm['alarm_text'], // 기존 알람 내용
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          alarm['response'], // 추가된 response 내용
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    subtitle: Text(
+                      'Time: ${alarm['alarm_time']}',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    contentPadding: EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                );
+              },
+            );
+          }
+        },
+      )
           : ListView.builder(
         itemCount: _alarms.length,
         itemBuilder: (context, index) {
