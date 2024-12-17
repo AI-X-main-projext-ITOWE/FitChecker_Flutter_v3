@@ -206,53 +206,60 @@ class LoginScreen extends StatelessWidget {
         : await UserApi.instance.loginWithKakaoAccount();
 
     print('카카오 로그인 성공: ${token.accessToken}');
-    // 토큰을 기반으로 Firebase 연동 가능
     return token;
   }
 
   // 사용자 정보 처리 및 화면 이동
   Future<void> _handleUserData(dynamic user, BuildContext context) async {
-    final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    try {
+      // Firestore에서 사용자 정보 가져오기
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
-        if (doc.exists) {
-          // Firestore 데이터 가져오기
-          final data = doc.data();
-          if (data != null) {
-            // UserModel 생성
-            final userModel = UserModel(
-              id: user.uid,
-              email: user.email ?? '',
-              name: user.displayName ?? '',
-              photoUrl: user.photoURL,
-              age: data['age'] ?? '',
-              height: data['height'] ?? '',
-              weight: data['weight'] ?? '',
-              gender: data['gender'] ?? '',
-              fcmToken: data['fcm_token']?? '',
+
+      if (doc.exists) {
+        final data = doc.data();
+        if (data != null) {
+          final userModel = UserModel(
+            id: user.uid,
+            email: user.email ?? '',
+            name: user.displayName ?? '',
+            photoUrl: user.photoURL,
+            age: data['age'] ?? '',
+            height: data['height'] ?? '',
+            weight: data['weight'] ?? '',
+            gender: data['gender'] ?? '',
+          );
+
+          // 정보가 부족하면 사용자 정보 입력 화면으로 이동
+          if (userModel.age == null || userModel.height == null || userModel.weight == null) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserInfoScreen(user: user),
+              ),
             );
-
-        if (userModel.age == null || userModel.height == null || userModel.weight == null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UserInfoScreen(user: user),
-            ),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomeScreen(),
-            ),
-          );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(),
+              ),
+            );
+          }
         }
+      } else {
+        // Firestore에 정보가 없다면 사용자 정보 입력 화면으로 이동
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserInfoScreen(user: user),
+          ),
+        );
       }
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UserInfoScreen(user: user),
-        ),
+    } catch (e) {
+      print("사용자 정보 처리 실패: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('사용자 정보 처리 실패: $e')),
       );
     }
   }
@@ -282,3 +289,4 @@ class LoginScreen extends StatelessWidget {
       print('카카오 로그인 실패: $e');
     }
   }
+}
