@@ -62,45 +62,51 @@ class _MainScreenState extends State<HomeScreen> {
 
 
         return ClipRRect(
-          borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정
-          child: Container(
-            width: screenWidth * 0.9, // 화면 너비의 90%
-            height: MediaQuery.of(context).size.height * 0.1, // 화면 높이의 10%
-            child: Swiper(
-              itemBuilder: (BuildContext context, int index) {
-                final imagePaths = [
-                  'assets/images/test_banner01.png',
-                  'assets/images/test_banner02.png',
-                  'assets/images/test_banner03.png',
-                ];
+          borderRadius: BorderRadius.circular(40), // 모서리를 둥글게 설정 (0.5)
+          child: Padding(
+            padding: EdgeInsets.all(8.0), // 모든 방향에 패딩 8.0을 추가 (패딩 크기 변경 가능)
+            child: Container(
+              width: screenWidth * 0.9, // 화면 너비의 90%
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.1, // 화면 높이의 10%
+              child: Swiper(
+                itemBuilder: (BuildContext context, int index) {
+                  final imagePaths = [
+                    'assets/images/test_banner01.jpg',
+                    'assets/images/test_banner02.jpg',
+                    'assets/images/test_banner03.jpg',
+                  ];
 
-                final urls = [
-                  'https://www.myprotein.co.kr/referrals.list?applyCode=JRHK-RL',
-                  null, // 두 번째 배너는 동작 없음
-                  null, // 세 번째 배너는 동작 없음
-                ];
+                  final urls = [
+                    'https://www.myprotein.co.kr/referrals.list?applyCode=JRHK-RL',
+                    null, // 두 번째 배너는 동작 없음
+                    null, // 세 번째 배너는 동작 없음
+                  ];
 
-                return GestureDetector(
-                  onTap: () {
-                    if (urls[index] != null) {
-                      _launchURL(urls[index]!);
-                    }
-                  },
-                  child: Image.asset(
-                    imagePaths[index],
-                    fit: BoxFit.cover,
-                  ),
-                );
-              },
-              itemCount: 3,
-              // 슬라이드 갯수
-              autoplay: true,
+                  return GestureDetector(
+                    onTap: () {
+                      if (urls[index] != null) {
+                        _launchURL(urls[index]!);
+                      }
+                    },
+                    child: Image.asset(
+                      imagePaths[index],
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                },
+                itemCount: 3, // 슬라이드 갯수
+                autoplay: true,
+              ),
             ),
           ),
         );
       },
     );
   }
+
 
   void _launchURL(String url) async {
     try {

@@ -86,6 +86,18 @@ class AboutScreen extends StatelessWidget {
               'Copyright 2024, ITOWE Team. All Rights Reserved.',
               style: TextStyle(fontSize: 16),
             ),
+            Text(
+              '아이콘',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              'https://www.flaticon.com/kr/free-icons/-',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              '스포츠와 경쟁 아이콘 제작자: monkik - Flaticon',
+              style: TextStyle(fontSize: 16),
+            )
           ],
         ),
       ),

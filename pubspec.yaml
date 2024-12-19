@@ -60,19 +60,16 @@ dependencies:
   flutter_local_notifications: ^18.0.0
   path_provider: ^2.1.4 #캐시 삭제에 필요
   provider: ^6.1.2
+  icons_launcher: ^3.0.0
 
+icons_launcher:
+  image_path: 'assets/icon/app_icon.png'						#여기에 아이콘의 경로를 넣어줍니다.
+  platforms:
+    android:
+      enable: true											#안드로이드용
+      adaptive_background_color: '#320067'					#여기에 아이콘이 배경색상을 정해줍니다. (HEX코드)
+      adaptive_foreground_image: 'assets/icon/app_icon.png'	#여기에 아이콘의 경로를 넣어줍니다.
 
-dev_dependencies:
-  flutter_launcher_icons: ^0.14.1
-
-  flutter_test:
-    sdk: flutter
-
-flutter_icons:
-  android: true
-  ios: true
-  image_path: "assets/icon/app_icon.png" # 앱 아이콘 파일 경로
-  min_sdk_android: 21 # 최소 SDK 버전
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -122,9 +119,9 @@ flutter:
   #
   assets:
     - assets/
-    - assets/images/test_banner01.png
-    - assets/images/test_banner02.png
-    - assets/images/test_banner03.png
+    - assets/images/test_banner01.jpg
+    - assets/images/test_banner02.jpg
+    - assets/images/test_banner03.jpg
     - assets/images/google_icon.png
     - assets/images/kakao_icon.png
     - assets/images/background.png
@@ -145,6 +142,7 @@ flutter:
     - assets/images/my.png
     - assets/config/.env
     - assets/icon/app_icon.png
+    - assets/images/exerciseplan.png
 
   fonts:
     - family: happyzcool
