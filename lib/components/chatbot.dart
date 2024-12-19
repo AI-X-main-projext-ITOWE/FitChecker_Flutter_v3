@@ -33,18 +33,24 @@ class _ChatbotState extends State<Chatbot> {
   String _userGender = "";
   final String apiUrl = dotenv.env['API_BASE_URL'] ?? "http://default.com/";
 
-
-
   @override
   void initState() {
     super.initState();
-    _fetchUserId();
-    _messages.add({"sender": "bot", "text": "AI 트레이너에게 운동에 관하여,  \n무엇이든 물어보세요!  \n  \nex)  \n오전 7시에 풀업 10회 씩 3세트 알람 맞춰 줘.  \n 기초 체력을 기를 수 있는 운동 추천해 줘."});
+    _messages.add({
+      "sender": "bot",
+      "text": "AI 트레이너에게 운동에 관하여,  \n무엇이든 물어보세요!  \n  \nex)  \n오전 7시에 풀업 10회 씩 3세트 알람 맞춰 줘.  \n 기초 체력을 기를 수 있는 운동 추천해 줘."
+    });
     _controller.text = widget.initialMessage;
-    _sendMessage(); // 페이지 로딩 시 자동으로 메시지 전송
+
+    _fetchUserId().then((isUserFetched) {
+      // 유저 정보가 정상적으로 로드되었으면 초기 메시지 전송
+      if (isUserFetched) {
+        _sendMessage();
+      }
+    });
   }
 
-  Future<void> _fetchUserId() async {
+  Future<bool> _fetchUserId() async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -63,13 +69,22 @@ class _ChatbotState extends State<Chatbot> {
           _userHeight = double.parse(snapshot['height']);
           _userWeight = double.parse(snapshot['weight']);
           _userGender = snapshot['gender'];
+
+          setState(() {
+            _userId = user.uid;
+          });
+
+          // 유저 정보가 정상적으로 로드되었으면 true 반환
+          return true;
+        } else {
+          return false;
         }
       } catch (e) {
         print('Error fetching user data: $e');
+        return false; // 오류 발생 시 false 반환
       }
-      setState(() {
-        _userId = user.uid;
-      });
+    } else {
+      return false; // 유저가 로그인되지 않은 경우 false 반환
     }
   }
 

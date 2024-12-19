@@ -77,7 +77,7 @@ class _MainPageState extends State<MainPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 균등한 간격 배치
                 children: [
                   _buildExerciseCard(context, "assets/images/routine.png", "운동 시작", ChoiceExercise()),
-                  _buildExerciseCard(context, "assets/images/routine.png", "운동 설계", Chatbot(initialMessage: '내 신체 정보에 알맞는 운동 루틴 설계해 줘.')),
+                  _buildExerciseCard(context, "assets/images/exerciseplan.png", "운동 설계", Chatbot(initialMessage: '내 신체 정보에 알맞는 운동 루틴 설계해 줘.')),
                   _buildExerciseCard(context, "assets/images/diet.png", "식단 짜기", Chatbot(initialMessage: '내 신체 정보에 알맞는 추천 식단 짜 줘.')),
                   _buildExerciseCard(context, "assets/images/alarm.png", "알람 확인", AlarmListPage()),
                 ],
